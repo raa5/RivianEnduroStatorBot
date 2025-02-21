@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install pandas requests slack_sdk schedule databricks pyspark
+        run: pip install pandas requests slack_sdk schedule databricks pyspark databricks-sql-connector
 
       - name: Run the script
         env:
