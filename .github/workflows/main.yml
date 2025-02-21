@@ -1,0 +1,28 @@
+name: Run RivianEnduroStatorBot
+
+on:
+  schedule:
+    - cron: '1 * * * *'  # Runs at 1 minute past every hour
+
+  workflow_dispatch:  # Allows manual execution
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install pandas requests slack_sdk schedule databricks pyspark
+
+      - name: Run the script
+        env:
+          DATABRICKS_ACCESS_TOKEN: ${{ secrets.DATABRICKS_ACCESS_TOKEN }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        run: python RivianEnduroStatorBot.py
