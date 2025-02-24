@@ -304,7 +304,7 @@ def job():
     df_210 = pd.read_sql(query_210, conn)
 
     # Combine DataFrames
-    df_combined = pd.concat([df_20, df_40, df_50, df_65, df_100, df_110, df_210], ignore_index=True)
+    df_combined = pd.concat([df_20, df_40, df_50, df_60, df_65, df_100, df_110, df_210], ignore_index=True)
 
     # Sort combined DataFrame by 'COUNT' column
     if 'COUNT' in df_combined.columns:
