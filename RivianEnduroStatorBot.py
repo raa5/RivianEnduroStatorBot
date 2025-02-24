@@ -16,7 +16,8 @@ DATABRICKS_HTTP_PATH = "/sql/1.0/warehouses/b050a7573faba9ab"
 DATABRICKS_ACCESS_TOKEN = "dapi0eb9a92a05ca6d1eb0a444b125490361"
 
 slack_token = "xoxb-2995242172-7567570817185-SBLzNdVOIHNolyQszfZHMBbu"
-url = 'https://hooks.slack.com/services/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'
+# url = 'https://hooks.slack.com/services/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'
+url = 'https://hooks.slack.com/services/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'
 
 # Slack setup
 client = WebClient(token=slack_token)
@@ -49,7 +50,7 @@ def job():
     t0 = time.time()
     conn = create_databricks_connection()
 
-    one_hour_before = datetime.now() - timedelta(hours=1)
+    one_hour_before = datetime.now() - timedelta(hours=100)
     recorded_at = one_hour_before.strftime('%Y-%m-%d %H:00')
 
     # Define the queries
@@ -359,7 +360,7 @@ def job():
     print(f"Task completed. Next run scheduled in 1 hour.")
 
 # Schedule the job to run every hour
-schedule.every(5).seconds.do(job)
+schedule.every(15).seconds.do(job)
 # schedule.every().hour.at(":01").do(job)
 
 # Keep the script running to maintain the schedule
