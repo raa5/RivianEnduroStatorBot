@@ -344,7 +344,7 @@ def job():
                 "text": {
                     "type": "mrkdwn",
                     # "text": "Fail COUNT by Parameter: " + datetime.now().strftime('%Y-%m-%d %H:00')
-                    "text": "*Fail count by Parameter:* " + recorded_at + " to " + (one_hour_before + timedelta(hours=1)).strftime('%H:00')
+                    "text": "*🚨Fail count by Parameter:* " + recorded_at + " to " + (one_hour_before + timedelta(hours=1)).strftime('%H:00')
 
                 }
             },
@@ -352,7 +352,7 @@ def job():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": df_combined_str
+                    "text": "```" + df_combined_str + "```"
                 }
             },
             {
@@ -362,12 +362,14 @@ def job():
                     "text": "*Fails by Station Pareto:*"
                 }
             },
+            { "type": "divider" },  # Add a divider to separate sections clearly
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": df_sum_str
+                    "text": "```" + df_sum_str + "```"
                 }
+            
             }
         ]
     }
