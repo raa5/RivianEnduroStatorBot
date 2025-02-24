@@ -15,9 +15,10 @@ DATABRICKS_SERVER_HOSTNAME = "rivian-prod-us-west-2.cloud.databricks.com"
 DATABRICKS_HTTP_PATH = "/sql/1.0/warehouses/b050a7573faba9ab"
 DATABRICKS_ACCESS_TOKEN = "dapi0eb9a92a05ca6d1eb0a444b125490361"
 
-slack_token = "xoxb-2995242172-7567570817185-SBLzNdVOIHNolyQszfZHMBbu"
+# slack_token = "xoxb-2995242172-7567570817185-SBLzNdVOIHNolyQszfZHMBbu"
 # url = 'https://hooks.slack.com/services/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'
-url = 'https://hooks.slack.com/services/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'
+slack_token = "xoxb-7395163450704-8511442670241-R7Fl3BArnXHBveetOtunZ7JJ"
+url = 'https://hooks.slack.com/services/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'
 
 # Slack setup
 client = WebClient(token=slack_token)
