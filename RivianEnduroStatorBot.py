@@ -368,8 +368,8 @@ def job():
     # print(f"Task completed. Next run scheduled in 1 hour.")
 
 # Schedule the job to run every hour
-# schedule.every(30).seconds.do(job)
-schedule.every().hour.at(":01").do(job)
+schedule.every(30).seconds.do(job)
+# schedule.every().hour.at(":01").do(job)
 
 # Keep the script running to maintain the schedule
 while True:
