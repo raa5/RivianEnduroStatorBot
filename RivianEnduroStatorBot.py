@@ -288,8 +288,8 @@ def job():
     if 'COUNT' in df_combined.columns:
         df_combined = df_combined.sort_values(['COUNT'], ascending=False, ignore_index=True)
 
-    print(df_combined)
-    print(df_combined.columns)
+    # print(df_combined)
+    # print(df_combined.columns)
 
 
     # Sum the COUNTs per STATION_NAME
@@ -300,7 +300,7 @@ def job():
     # Sort combined DataFrame by 'COUNT' column
     df_sum = df_sum.sort_values(['COUNT'], ascending=False, ignore_index=True)
 
-    print(df_sum)
+    # print(df_sum)
 
     # Convert DataFrames to a JSON-like format (table-like string)
     def df_to_table(df):
@@ -352,12 +352,12 @@ def job():
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-    print(response.status_code)
-    print(response.text)
+    # print(response.status_code)
+    # print(response.text)
 
     t1 = time.time()
-    print(f'Time taken: {t1-t0} seconds')
-    print(f"Task completed. Next run scheduled in 1 hour.")
+    # print(f'Time taken: {t1-t0} seconds')
+    # print(f"Task completed. Next run scheduled in 1 hour.")
 
 # Schedule the job to run every hour
 schedule.every(15).seconds.do(job)
