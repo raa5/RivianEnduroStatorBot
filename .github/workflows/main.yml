@@ -2,7 +2,7 @@ name: Run RivianEnduroStatorBot
 
 on:
   schedule:
-    - cron: '1 * * * *'  # Runs at 1 minute past every hour
+    - cron: '10 * * * *'  # Runs at 1 minute past every hour
 
   workflow_dispatch:  # Allows manual execution
 
