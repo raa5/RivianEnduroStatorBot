@@ -331,7 +331,7 @@ def job():
     # Convert DataFrames to a JSON-like format (table-like string)
     def df_to_table(df):
         table_str = df.to_string(index=False)
-        return "```" + table_str + "```"
+        return table_str 
 
     df_combined_str = df_to_table(df_combined)
     df_sum_str = df_to_table(df_sum)
@@ -352,7 +352,7 @@ def job():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": ``` + df_combined_str + ```
+                    "text": "```" + df_combined_str + "```"
                 }
             },
             {
