@@ -352,7 +352,7 @@ def job():
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "```" + df_combined_str + "```"
+                    "text": ``` + df_combined_str + ```
                 }
             },
             {
