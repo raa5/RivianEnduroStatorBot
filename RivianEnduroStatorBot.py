@@ -374,10 +374,13 @@ def job():
 
 # Schedule the job to run every hour
 # schedule.every(30).seconds.do(job)
-schedule.every(30).seconds.do(job)
 # schedule.every().hour.at(":01").do(job)
 
 # Keep the script running to maintain the schedule
-while True:
-    schedule.run_pending()
-#     # time.sleep(15)
+# while True:
+#     schedule.run_pending()
+# #     # time.sleep(15)
+
+job()  # Run the function once
+
+
