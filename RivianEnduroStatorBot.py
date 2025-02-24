@@ -168,7 +168,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '050' as STATION_NAME,
-        'Check Plate Fails' as alarm_description
+        'Check Plate Fails' as PARAMETER_NAME
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-050%'
     and activated_at > '{recorded_at}'
