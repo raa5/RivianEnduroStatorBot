@@ -4,6 +4,7 @@ import requests
 import json
 import schedule
 import time
+import pytz
 from datetime import datetime, timedelta
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -52,6 +53,10 @@ def execute_query(query, conn):
 def job():
     t0 = time.time()
     conn = create_databricks_connection()
+
+    local_tz = pytz.timezone("America/Chicago")  # Change this to your expected timezone
+    utc_now = datetime.now(pytz.utc)  # Get current UTC time
+    local_now = utc_now.astimezone(local_tz)  # Convert to local timezone
 
     one_hour_before = datetime.now() - timedelta(hours=1)
     recorded_at = one_hour_before.strftime('%Y-%m-%d %H:00')
