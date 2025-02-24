@@ -372,6 +372,6 @@ schedule.every(2).minutes.do(job)
 # schedule.every().hour.at(":01").do(job)
 
 # Keep the script running to maintain the schedule
-# while True:
-#     schedule.run_pending()
+while True:
+    schedule.run_pending()
 #     # time.sleep(15)
