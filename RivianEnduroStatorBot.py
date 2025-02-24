@@ -66,7 +66,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Assembly error' as PARAMETER_NAME
+        'Assembly error' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -79,7 +79,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Paperjam: insulating 1' as alarm_description
+        'Paperjam: insulating 1' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -92,7 +92,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Paperjam: insulating 2' as alarm_description
+        'Paperjam: insulating 2' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -105,7 +105,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Slot Search Fail' as PARAMETER_NAME
+        'Slot Search Fail' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -118,7 +118,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Post-Forming' as alarm_description
+        'Post-Forming' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -131,7 +131,7 @@ def job():
     select 
         COUNT(*) as COUNT,
         '020' as STATION_NAME,
-        'Paper Pusher' as alarm_description
+        'Paper Pusher' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
     and activated_at > '{recorded_at}'
@@ -181,7 +181,7 @@ def job():
     select
         COUNT(*) as COUNT,
         '060' as STATION_NAME,
-        'Bad Cuts/Welding Fail' as alarm_description
+        'Bad Cuts/Welding Fail' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-060%'
     and activated_at > '{recorded_at}'
@@ -340,7 +340,7 @@ def job():
                 "text": {
                     "type": "mrkdwn",
                     # "text": "Fail COUNT by Parameter: " + datetime.now().strftime('%Y-%m-%d %H:00')
-                    "text": "*Fail count by Parameter:* " + recorded_at + " to " + (one_hour_before + timedelta(hours=1)).strftime('%H:00')
+                    "text": "-------------------------------------/n*Fail count by Parameter:* " + recorded_at + " to " + (one_hour_before + timedelta(hours=1)).strftime('%H:00')
 
                 }
             },
