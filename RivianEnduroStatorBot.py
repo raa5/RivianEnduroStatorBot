@@ -306,6 +306,10 @@ def job():
     # Combine DataFrames
     df_combined = pd.concat([df_20, df_40, df_50, df_60, df_65, df_100, df_110, df_210], ignore_index=True)
 
+    df_combined["PARAMETER_NAME"] = df_combined["ALARM_DESCRIPTION"].fillna(df_combined["PARAMETER_NAME"])
+    df_combined.drop(columns=["ALARM_DESCRIPTION"], inplace=True)  # Remove old column
+
+
     # Sort combined DataFrame by 'COUNT' column
     if 'COUNT' in df_combined.columns:
         df_combined = df_combined.sort_values(['COUNT'], ascending=False, ignore_index=True)
