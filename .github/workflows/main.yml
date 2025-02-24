@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: pip install pandas requests slack_sdk schedule databricks pyspark databricks-sql-connector
 
+      - name: Set timezone
+        run: sudo timedatectl set-timezone America/Chicago
+
+
       - name: Run the script
         env:
           DATABRICKS_ACCESS_TOKEN: ${{ secrets.DATABRICKS_ACCESS_TOKEN }}
