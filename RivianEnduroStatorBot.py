@@ -53,7 +53,7 @@ def job():
     t0 = time.time()
     conn = create_databricks_connection()
 
-    one_hour_before = datetime.now() - timedelta(hours=100)
+    one_hour_before = datetime.now() - timedelta(hours=1)
     recorded_at = one_hour_before.strftime('%Y-%m-%d %H:00')
 
     # Define the queries
@@ -369,7 +369,7 @@ def job():
 
 # Schedule the job to run every hour
 # schedule.every(30).seconds.do(job)
-schedule.every().hour.at(":15").do(job)
+schedule.every().hour.at(":01").do(job)
 
 # Keep the script running to maintain the schedule
 while True:
