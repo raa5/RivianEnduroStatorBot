@@ -352,7 +352,7 @@ def job():
     # Send the payload to Slack using a webhook
     # url = http_post_hash.url
     headers = {'Content-type': 'application/json'}
-    print(f"DEBUG: Sending message to Slack. Token: {slack_token}, Webhook URL: {slack_webhook_url}")
+    print(f"DEBUG: Sending message to Slack. Token: {slack_token}, Webhook URL: {url}")
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
