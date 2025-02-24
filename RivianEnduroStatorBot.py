@@ -329,24 +329,9 @@ def job():
     # print(df_sum)
 
     # Convert DataFrames to a JSON-like format (table-like string)
-    # def df_to_table(df):
-    #     table_str = df.to_string(index=False)
-    #     return table_str 
-
     def df_to_table(df):
-        # Convert all columns to strings
-        df = df.astype(str)
-    
-        # Find the max width for each column
-        col_widths = [max(df[col].apply(len).max(), len(col)) for col in df.columns]
-    
-        # Create a formatted string for the header
-        header = "  ".join(col.ljust(col_widths[i]) for i, col in enumerate(df.columns))
-    
-        # Create formatted rows
-        rows = "\n".join("  ".join(str(row[col]).ljust(col_widths[i]) for i, col in enumerate(df.columns)) for _, row in df.iterrows())
-    
-        return f"```\n{header}\n{'-' * len(header)}\n{rows}\n```"
+        table_str = df.to_string(index=False)
+        return table_str 
     
 
     df_combined_str = df_to_table(df_combined)
