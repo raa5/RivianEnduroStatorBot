@@ -176,7 +176,20 @@ def job():
     and alarm_description ilike ('%Assembly error%Task[301]%')
     group by STATION_NAME
     """
-
+    
+    query_60 = f"""
+    select
+        COUNT(*) as COUNT,
+        '060' as STATION_NAME,
+        'Bad Cuts/Welding Fail' as alarm_description
+    from manufacturing.drive_unit.fct_du02_scada_alarms
+    where alarm_source_scada_short_name ilike '%STTR01-060%'
+    and activated_at > '{recorded_at}'
+    and alarm_priority_desc in ('high', 'critical')
+    and alarm_description ilike '%Assembly error :%'
+    group by STATION_NAME
+    """
+    
     query_65 = f"""
     SELECT COUNT(DISTINCT product_serial) as COUNT, STATION_NAME, PARAMETER_NAME
     FROM manufacturing.spinal.fct_spinal_parameter_records
@@ -284,6 +297,7 @@ def job():
     df_20 = pd.read_sql(query_20, conn)
     df_40 = pd.read_sql(query_40, conn)
     df_50 = pd.read_sql(query_50, conn)
+    df_60 = pd.read_sql(query_60, conn)
     df_65 = pd.read_sql(query_65, conn)
     df_100 = pd.read_sql(query_100, conn)
     df_110 = pd.read_sql(query_110, conn)
