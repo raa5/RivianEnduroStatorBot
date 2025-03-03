@@ -292,6 +292,35 @@ def job():
     ORDER BY COUNT DESC
     """
 
+    query_210_unique_sn = f"""
+    select count(distinct product_serial) as COUNT, station_name
+    FROM manufacturing.spinal.fct_spinal_parameter_records
+    WHERE line_name = 'STTR01'
+    AND STATION_NAME = '210'
+    AND overall_process_status = 'NOK'
+    AND recorded_at > '{recorded_at}'
+    AND (
+        ((PARAMETER_NAME = 'AmbientTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 50)) AND (work_location_name= '01' or work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Area Waveform UV Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Area Waveform VW Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Area Waveform WU Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Humidity Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'InbalanceOfAllPhasesU Value' AND (parameter_value_num < 0 OR parameter_value_num > 1.5)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Insulation Resistance UVW to GND Value' AND (parameter_value_num < 200 OR parameter_value_num > 10000)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Insulation Voltage UVW to GND Value' AND (parameter_value_num < 450 OR parameter_value_num > 550)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'PartTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Pdiv HvAc Value' AND (parameter_value_num < 800 OR parameter_value_num > 10000)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Pdiv UV Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Pdiv VW Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'Pdiv WU Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_name= '02')) OR
+        ((PARAMETER_NAME = 'PhaseResistance between UV Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'PhaseResistance between VW Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'PhaseResistance between WU Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Withstand Current UVW to GND Value' AND (parameter_value_num < 0 OR parameter_value_num > 15)) AND (work_location_name= '01')) OR
+        ((PARAMETER_NAME = 'Withstand Voltage UVW to GND Value' AND (parameter_value_num < 1850 OR parameter_value_num > 1950)) AND (work_location_name= '02'))
+    )
+    GROUP BY ALL
+    """
 
     # Execute queries and fetch data into DataFrames
     df_20 = pd.read_sql(query_20, conn)
@@ -302,6 +331,10 @@ def job():
     df_100 = pd.read_sql(query_100, conn)
     df_110 = pd.read_sql(query_110, conn)
     df_210 = pd.read_sql(query_210, conn)
+    
+    df_210_unique_sn = pd.read_sql(query_210_unique_sn, conn)
+    
+
 
     # Combine DataFrames
     df_combined = pd.concat([df_20, df_40, df_50, df_60, df_65, df_100, df_110, df_210], ignore_index=True)
@@ -314,19 +347,38 @@ def job():
     if 'COUNT' in df_combined.columns:
         df_combined = df_combined.sort_values(['COUNT'], ascending=False, ignore_index=True)
 
-    # print(df_combined)
-    # print(df_combined.columns)
+    # Aggregate total failures per station (without duplicates)
+    df_sum = df_combined.groupby("STATION_NAME")["COUNT"].sum().reset_index()
 
+    # Merge unique product serial failures for Station 210
+    if not df_210_unique_sn.empty and "STATION_NAME" in df_210_unique_sn.columns and "COUNT" in df_210_unique_sn.columns:
+        df_210_unique_sn = df_210_unique_sn.rename(columns={"COUNT": "FAIL_COUNT"})
 
-    # Sum the COUNTs per STATION_NAME
-    # df_sum = df_combined.groupby('STATION_NAME')['COUNT'].sum().reset_index()
-    df_sum = df_combined.groupby(df_combined.columns[df_combined.columns.str.upper() == "STATION_NAME"][0])['COUNT'].sum().reset_index()
+        # Merge Station 210's unique product serial failures into df_sum
+        df_sum = df_sum.merge(df_210_unique_sn, on="STATION_NAME", how="left")
 
+        # Replace total failure count with unique serial count for Station 210
+        df_sum["COUNT"] = df_sum["FAIL_COUNT"].fillna(df_sum["COUNT"])
+        
+        # Drop the temporary column
+        df_sum.drop(columns=["FAIL_COUNT"], inplace=True)
+    else:
+        print("Warning: STATION_NAME or COUNT column missing from df_210_unique_sn. Falling back to regular sum.")
 
-    # Sort combined DataFrame by 'COUNT' column
+    # Convert NaNs to 0 and ensure integer counts
+    df_sum["COUNT"] = df_sum["COUNT"].fillna(0).astype(int)
+
+    # Sort results
     df_sum = df_sum.sort_values(['COUNT'], ascending=False, ignore_index=True)
 
-    # print(df_sum)
+
+
+    # # Ensure df_unique_serials has necessary columns before proceeding
+    # if 'STATION_NAME' in df_210_unique_sn.columns and 'COUNT' in df_210_unique_sn.columns:
+    #     df_sum = df_210_unique_sn.rename(columns={"COUNT": "FAIL_COUNT"})
+    # else:
+    #     print("Warning: STATION_NAME or COUNT column missing from df_unique_serials. Falling back to regular sum.")
+    #     df_sum = df_combined.groupby('STATION_NAME')['COUNT'].sum().reset_index()
 
     # Convert DataFrames to a JSON-like format (table-like string)
     def df_to_table(df):
@@ -403,5 +455,3 @@ def job():
 #     # time.sleep(15)
 
 job()  # Run the function once
-
-
