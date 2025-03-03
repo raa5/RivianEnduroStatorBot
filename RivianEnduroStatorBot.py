@@ -152,31 +152,29 @@ def job():
     """
 
     query_50 = f"""
-    SELECT 
+    select 
         COUNT(*) as COUNT,
         '050' as STATION_NAME,
-        'Assembly error' as PARAMETER_NAME,
-        MIN(activated_at) as activated_at -- Get the earliest activation for timestamp-based filtering
-    FROM manufacturing.drive_unit.fct_du02_scada_alarms
-    WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
-    AND activated_at > '{recorded_at}'
-    AND alarm_priority_desc IN ('high', 'critical')
-    AND alarm_description ILIKE '%Assembly error%'
-    GROUP BY STATION_NAME, PARAMETER_NAME
+        'Assembly error' as PARAMETER_NAME
+    from manufacturing.drive_unit.fct_du02_scada_alarms
+    where alarm_source_scada_short_name ilike '%STTR01-050%'
+    and activated_at > '{recorded_at}'
+    and alarm_priority_desc in ('high', 'critical')
+    and alarm_description ilike '%Assembly error%'
+    group by STATION_NAME
 
-    UNION ALL
+    union all
 
-    SELECT 
+    select 
         COUNT(*) as COUNT,
         '050' as STATION_NAME,
-        'Check Plate Fails' as PARAMETER_NAME,
-        MIN(activated_at) as activated_at
-    FROM manufacturing.drive_unit.fct_du02_scada_alarms
-    WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
-    AND activated_at > '{recorded_at}'
-    AND alarm_priority_desc IN ('high', 'critical')
-    AND alarm_description ILIKE '%Assembly error%Task[301]%'
-    GROUP BY STATION_NAME, PARAMETER_NAME
+        'Check Plate Fails' as PARAMETER_NAME
+    from manufacturing.drive_unit.fct_du02_scada_alarms
+    where alarm_source_scada_short_name ilike '%STTR01-050%'
+    and activated_at > '{recorded_at}'
+    and alarm_priority_desc in ('high', 'critical')
+    and alarm_description ilike ('%Assembly error%Task[301]%')
+    group by STATION_NAME
     """
     
     query_60 = f"""
@@ -349,25 +347,13 @@ def job():
     if 'COUNT' in df_combined.columns:
         df_combined = df_combined.sort_values(['COUNT'], ascending=False, ignore_index=True)
 
-    # ✅ Step 2: Filter Station 50 to keep unique timestamps (60s apart)
-    df_50 = df_50.sort_values(by="activated_at", ascending=True).reset_index(drop=True)
-
-    # Calculate time difference in seconds
-    df_50["TIME_DIFF"] = df_50["activated_at"].diff().dt.total_seconds()
-
-    # Keep only faults that are at least **60s apart**
-    df_50_unique = df_50[(df_50["TIME_DIFF"].isna()) | (df_50["TIME_DIFF"] >= 60)]
-
-    # Drop extra columns
-    df_50_unique = df_50_unique.drop(columns=["TIME_DIFF", "activated_at"])
-
-    # ✅ Step 3: Aggregate total failures per station (without duplicates)
+    # Aggregate total failures per station (without duplicates)
     df_sum = df_combined.groupby("STATION_NAME")["COUNT"].sum().reset_index()
 
-    # ✅ Step 4: Merge Station 210 (Unique Serial Numbers)
-    if 'STATION_NAME' in df_210_unique_sn.columns and 'COUNT' in df_210_unique_sn.columns:
-        df_210_unique_sn.rename(columns={"COUNT": "FAIL_COUNT"}, inplace=True)
-        
+    # Merge unique product serial failures for Station 210
+    if not df_210_unique_sn.empty and "STATION_NAME" in df_210_unique_sn.columns and "COUNT" in df_210_unique_sn.columns:
+        df_210_unique_sn = df_210_unique_sn.rename(columns={"COUNT": "FAIL_COUNT"})
+
         # Merge Station 210's unique product serial failures into df_sum
         df_sum = df_sum.merge(df_210_unique_sn, on="STATION_NAME", how="left")
 
@@ -376,18 +362,15 @@ def job():
         
         # Drop the temporary column
         df_sum.drop(columns=["FAIL_COUNT"], inplace=True)
-
-    # ✅ Step 5: Merge Station 50 unique count (Handle NaN)
-    if not df_50_unique.empty and "COUNT" in df_50_unique.columns:
-        df_50_fail_count = df_50_unique["COUNT"].sum()
     else:
-        df_50_fail_count = 0  # Default to zero if no data
+        print("Warning: STATION_NAME or COUNT column missing from df_210_unique_sn. Falling back to regular sum.")
 
-    # Use `pd.concat()` instead of deprecated `.append()`
-    df_sum = pd.concat([df_sum, pd.DataFrame({"STATION_NAME": ["050"], "COUNT": [df_50_fail_count]})], ignore_index=True)
+    # Convert NaNs to 0 and ensure integer counts
+    df_sum["COUNT"] = df_sum["COUNT"].fillna(0).astype(int)
 
-    # ✅ Step 6: Sort results
+    # Sort results
     df_sum = df_sum.sort_values(['COUNT'], ascending=False, ignore_index=True)
+
 
 
     # # Ensure df_unique_serials has necessary columns before proceeding
