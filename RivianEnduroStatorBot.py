@@ -269,24 +269,24 @@ def job():
     AND overall_process_status = 'NOK'
     AND recorded_at > '{recorded_at}'
     AND (
-        (PARAMETER_NAME = 'AmbientTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 50)) OR
-        (PARAMETER_NAME = 'Area Waveform UV Value' AND (parameter_value_num < -10 OR parameter_value_num > 3)) OR
-        (PARAMETER_NAME = 'Area Waveform VW Value' AND (parameter_value_num < -10 OR parameter_value_num > 3)) OR
-        (PARAMETER_NAME = 'Area Waveform WU Value' AND (parameter_value_num < -10 OR parameter_value_num > 3)) OR
-        (PARAMETER_NAME = 'Humidity Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) OR
-        (PARAMETER_NAME = 'InbalanceOfAllPhasesU Value' AND (parameter_value_num < 0 OR parameter_value_num > 1.5)) OR
-        (PARAMETER_NAME = 'Insulation Resistance UVW to GND Value' AND (parameter_value_num < 200 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'Insulation Voltage UVW to GND Value' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-        (PARAMETER_NAME = 'PartTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) OR
-        (PARAMETER_NAME = 'Pdiv HvAc Value' AND (parameter_value_num < 800 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'Pdiv UV Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'Pdiv VW Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'Pdiv WU Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'PhaseResistance between UV Value' AND (parameter_value_num < 0 OR parameter_value_num > 9.9)) OR
-        (PARAMETER_NAME = 'PhaseResistance between VW Value' AND (parameter_value_num < 0 OR parameter_value_num > 9.9)) OR
-        (PARAMETER_NAME = 'PhaseResistance between WU Value' AND (parameter_value_num < 0 OR parameter_value_num > 9.9)) OR
-        (PARAMETER_NAME = 'Withstand Current UVW to GND Value' AND (parameter_value_num < 0 OR parameter_value_num > 15)) OR
-        (PARAMETER_NAME = 'Withstand Voltage UVW to GND Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000))
+         ((PARAMETER_NAME = 'AmbientTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 50)) AND (work_location_id = 01 or work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Area Waveform UV Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Area Waveform VW Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Area Waveform WU Value' AND (parameter_value_num < -3 OR parameter_value_num > 3)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Humidity Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'InbalanceOfAllPhasesU Value' AND (parameter_value_num < 0 OR parameter_value_num > 1.5)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Insulation Resistance UVW to GND Value' AND (parameter_value_num < 200 OR parameter_value_num > 10000)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Insulation Voltage UVW to GND Value' AND (parameter_value_num < 450 OR parameter_value_num > 550)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'PartTemperature Value' AND (parameter_value_num < 0 OR parameter_value_num > 100)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Pdiv HvAc Value' AND (parameter_value_num < 800 OR parameter_value_num > 10000)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Pdiv UV Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Pdiv VW Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'Pdiv WU Value' AND (parameter_value_num < 1400 OR parameter_value_num > 10000)) AND (work_location_id = 02)) OR
+        ((PARAMETER_NAME = 'PhaseResistance between UV Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'PhaseResistance between VW Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'PhaseResistance between WU Value' AND (parameter_value_num < 10.637 OR parameter_value_num > 11.523)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Withstand Current UVW to GND Value' AND (parameter_value_num < 0 OR parameter_value_num > 15)) AND (work_location_id = 01)) OR
+        ((PARAMETER_NAME = 'Withstand Voltage UVW to GND Value' AND (parameter_value_num < 1850 OR parameter_value_num > 1950)) AND (work_location_id = 02)) 
     )
     GROUP BY STATION_NAME, PARAMETER_NAME
     ORDER BY COUNT DESC
