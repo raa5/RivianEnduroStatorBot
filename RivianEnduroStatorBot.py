@@ -361,7 +361,9 @@ def job():
     df_sum["COUNT"] = df_sum["COUNT"].fillna(0).astype(int)
 
     # Sort results
+    df_sum = df_sum[df_sum["COUNT"] > 0]
     df_sum = df_sum.sort_values(['COUNT'], ascending=False, ignore_index=True)
+    
 
 
 
