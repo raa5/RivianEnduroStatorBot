@@ -411,7 +411,7 @@ def job():
     where 
         shop_name = 'DU02'
         and line_name = 'STTR01'
-        and gen.consumed_at >= '2025-04-04'
+        and gen.consumed_at >= '2025-03-04'
     
     order by nest_consumed_at desc;
     """
