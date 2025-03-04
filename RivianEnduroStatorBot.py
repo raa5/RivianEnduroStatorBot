@@ -36,6 +36,17 @@ def send_message_to_slack(channel, text):
     except SlackApiError as e:
         print(f"Error sending message to Slack: {e.response['error']}")
 
+def send_image_to_slack(channel, image_path, title="Pareto Chart"):
+    try:
+        response = client.files_upload(
+            channels=channel,
+            file=image_path,
+            title=title
+        )
+        print(f"Image uploaded to {channel} with timestamp {response['file']['id']}")
+    except SlackApiError as e:
+        print(f"Error uploading image to Slack: {e.response['error']}")
+        
 def create_databricks_connection():
     return sql.connect(
         server_hostname=DATABRICKS_SERVER_HOSTNAME,
@@ -49,6 +60,28 @@ def execute_query(query, conn):
         result = cursor.fetchall()
         columns = [desc[0].upper() for desc in cursor.description]
         return pd.DataFrame(result, columns=columns)
+
+def generate_sttr30_nest_chart(df, filename="sttr30_nest_chart.png"):
+    """Generates a professional bar chart for STTR30 Nest count."""
+    if df.empty:
+        print("No data available for STTR30 Nest count.")
+        return None
+    
+    plt.figure(figsize=(12, 5))
+    plt.bar(df["NEST_ORIGIN"], df["COUNT"], color="teal")
+
+    plt.xlabel("STTR-030 Hairpin of Origin", fontsize=12, fontweight="bold")
+    plt.ylabel("Quantity", fontsize=12, fontweight="bold")
+    plt.title("STTR-30 Total Nest Produced", fontsize=14, fontweight="bold")
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    # Annotate bars with values
+    for index, value in enumerate(df["COUNT"]):
+        plt.text(index, value + 1, str(value), ha="center", fontsize=12, fontweight='bold')
+
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close()
+    return filename
 
 def job():
     t0 = time.time()
@@ -341,6 +374,48 @@ def job():
     GROUP BY ALL
     """
 
+    query_sttr30_nest_count = f"""
+    with
+    nest_origin as (
+    select station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
+    from manufacturing.spinal.fct_spinal_parameter_records
+    where 
+        shop_name = 'DU02'
+        and line_name = 'STTR01'
+        and station_name like '030%'
+        and parameter_name = 'Nest'
+    ),
+    
+    weld_origin as (
+    select station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
+    from manufacturing.spinal.fct_spinal_parameter_records
+    where 
+        shop_name = 'DU02'
+        and line_name = 'STTR01'
+        and station_name like '060'
+        and parameter_name ilike 'WELDING TEMPLATE NUMBER'
+    )
+    
+    select distinct
+        gen.product_serial as parent_serial,
+        nest.station_name as nest_origin,
+        nest.parameter_value_raw as nest_number,
+        gen.consumed_at as nest_consumed_at,
+        weld.parameter_value_raw as weld_station_060
+    
+    from manufacturing.mes.fct_genealogy as gen
+    join nest_origin as nest
+        on gen.scanned_child_serial = nest.product_serial
+    join weld_origin as weld
+        on gen.product_serial = weld.product_serial
+    where 
+        shop_name = 'DU02'
+        and line_name = 'STTR01'
+        and gen.consumed_at >= '{recorded_at}'
+    
+    order by nest_consumed_at desc;
+    """
+
     # Execute queries and fetch data into DataFrames
     df_20 = pd.read_sql(query_20, conn)
     df_40 = pd.read_sql(query_40, conn)
@@ -353,6 +428,21 @@ def job():
     df_210 = pd.read_sql(query_210, conn)
     
     df_210_unique_sn = pd.read_sql(query_210_unique_sn, conn)
+
+    df_nest_count = execute_query(query_sttr30_nest_count, conn)
+
+    if df_nest_count.empty:
+        print("No Nest Origin data found.")
+        return
+
+    # Generate the chart
+    chart_path = generate_sttr30_nest_chart(df_nest_count)
+
+    # Send chart to Slack
+    if chart_path:
+        send_image_to_slack(url, chart_path)
+
+    print("Task completed.")
     
 
 
