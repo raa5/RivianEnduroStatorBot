@@ -82,7 +82,7 @@ def job():
         'Paperjam: insulating 1' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}''
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
     group by STATION_NAME
