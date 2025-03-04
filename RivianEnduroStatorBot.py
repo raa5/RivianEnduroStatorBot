@@ -152,29 +152,21 @@ def job():
     """
 
     query_50 = f"""
-    select 
+    SELECT 
         COUNT(*) as COUNT,
         '050' as STATION_NAME,
-        'Assembly error' as PARAMETER_NAME
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-050%'
-    and activated_at > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%Assembly error%'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '050' as STATION_NAME,
-        'Check Plate Fails' as PARAMETER_NAME
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-050%'
-    and activated_at > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike ('%Assembly error%Task[301]%')
-    group by STATION_NAME
+        'Twisting Check Plate Fails' as PARAMETER_NAME
+    FROM (
+        SELECT *,
+               LAG(cleared_at) OVER (PARTITION BY alarm_source_scada_short_name ORDER BY activated_at) AS prev_cleared_at
+        FROM manufacturing.drive_unit.fct_du02_scada_alarms
+        WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
+        AND activated_at > '{recorded_at}'
+        AND alarm_priority_desc IN ('high', 'critical')
+        AND alarm_description ILIKE '%Assembly error%Task[301]%'
+    ) subquery
+    WHERE activated_at > prev_cleared_at + INTERVAL '60 seconds'
+       OR prev_cleared_at IS NULL; -- Keep the first occurrence
     """
     
     query_60 = f"""
