@@ -205,6 +205,32 @@ def job():
     ORDER BY COUNT DESC
     """
 
+    query_80 = f"""
+    SELECT 
+          COUNT(*) as COUNT,
+          '080' as STATION_NAME,
+          'Bad Cuts/Welding Fail' as ALARM_DESCRIPTION
+    FROM manufacturing.drive_unit.fct_du02_scada_alarms
+    WHERE alarm_source_scada_short_name ILIKE '%STTR01-080%'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
+    AND alarm_priority_desc IN ('high', 'critical')
+    AND alarm_description ILIKE '%Assembly error :%'
+    group by STATION_NAME
+    
+    UNION ALL
+    
+    SELECT 
+          COUNT(*) as COUNT,
+          '080' as STATION_NAME,
+          'Laser: General Error' as ALARM_DESCRIPTION
+    FROM manufacturing.drive_unit.fct_du02_scada_alarms
+    WHERE alarm_source_scada_short_name ILIKE '%STTR01-080%'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
+    AND alarm_priority_desc IN ('high', 'critical')
+    AND alarm_description ILIKE '%Laser: General error%'
+    group by STATION_NAME
+    """
+
     query_100 = f"""
     SELECT COUNT(DISTINCT product_serial) as COUNT, STATION_NAME, PARAMETER_NAME
     FROM manufacturing.spinal.fct_spinal_parameter_records
@@ -321,6 +347,7 @@ def job():
     df_50 = pd.read_sql(query_50, conn)
     df_60 = pd.read_sql(query_60, conn)
     df_65 = pd.read_sql(query_65, conn)
+    df_80 = pd.read_sql(query_80, conn)
     df_100 = pd.read_sql(query_100, conn)
     df_110 = pd.read_sql(query_110, conn)
     df_210 = pd.read_sql(query_210, conn)
@@ -330,7 +357,7 @@ def job():
 
 
     # Combine DataFrames
-    df_combined = pd.concat([df_20, df_40, df_50, df_60, df_65, df_100, df_110, df_210], ignore_index=True)
+    df_combined = pd.concat([df_20, df_40, df_50, df_60, df_65, df_80, df_100, df_110, df_210], ignore_index=True)
 
     df_combined["PARAMETER_NAME"] = df_combined["ALARM_DESCRIPTION"].fillna(df_combined["PARAMETER_NAME"])
     df_combined.drop(columns=["ALARM_DESCRIPTION"], inplace=True)  # Remove old column
