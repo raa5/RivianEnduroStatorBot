@@ -69,7 +69,7 @@ def job():
         'Assembly error' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description = '{0} Assembly error {1}'
     group by STATION_NAME
@@ -82,7 +82,7 @@ def job():
         'Paperjam: insulating 1' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}''
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
     group by STATION_NAME
@@ -95,7 +95,7 @@ def job():
         'Paperjam: insulating 2' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description = 'Paperjam Station [ __KeyInsulating2 ]'
     group by STATION_NAME
@@ -108,7 +108,7 @@ def job():
         'Slot Search Fail' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description ilike '%No Slot at Stator detected%'
     group by STATION_NAME
@@ -121,7 +121,7 @@ def job():
         'Post-Forming' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description ilike '%Cylinder [ __KeyPostForming%Cylinder working position%'
     group by STATION_NAME
@@ -134,7 +134,7 @@ def job():
         'Paper Pusher' as ALARM_DESCRIPTION
     from manufacturing.drive_unit.fct_du02_scada_alarms
     where alarm_source_scada_short_name ilike '%STTR01-020%'
-    and activated_at > '{recorded_at}'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
     and alarm_priority_desc in ('high', 'critical')
     and alarm_description ilike ('%Axis not in control [ PaperPusher (Z6)%') 
     group by STATION_NAME
@@ -161,7 +161,7 @@ def job():
                LAG(cleared_at) OVER (PARTITION BY alarm_source_scada_short_name ORDER BY activated_at) AS prev_cleared_at
         FROM manufacturing.drive_unit.fct_du02_scada_alarms
         WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
-        AND activated_at > '{recorded_at}'
+        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
         AND alarm_priority_desc IN ('high', 'critical')
         AND alarm_description ILIKE '%Assembly error%Task[301]%'
     ) subquery
@@ -170,15 +170,15 @@ def job():
     """
     
     query_60 = f"""
-    select
-        COUNT(*) as COUNT,
-        '060' as STATION_NAME,
-        'Bad Cuts/Welding Fail' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-060%'
-    and activated_at > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%Assembly error :%'
+    SELECT 
+          COUNT(*) as COUNT,
+          '060' as STATION_NAME,
+          'Bad Cuts/Welding Fail' as ALARM_DESCRIPTION
+    FROM manufacturing.drive_unit.fct_du02_scada_alarms
+    WHERE alarm_source_scada_short_name ILIKE '%STTR01-060%'
+    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
+    AND alarm_priority_desc IN ('high', 'critical')
+    AND alarm_description ILIKE '%Assembly error :%'
     group by STATION_NAME
     """
     
