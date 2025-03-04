@@ -415,6 +415,7 @@ def job():
     # Payload with both DataFrames formatted as tables
     payload = {
         "blocks": [
+            { "type": "divider" },  # Add a divider to separate sections clearly
             {
                 "type": "section",
                 "text": {
@@ -438,7 +439,6 @@ def job():
                     "text": "*Fails by Station Pareto:*"
                 }
             },
-            { "type": "divider" },  # Add a divider to separate sections clearly
             {
                 "type": "section",
                 "text": {
@@ -446,7 +446,8 @@ def job():
                     "text": "```" + df_sum_str + "```"
                 }
             
-            }
+            },
+            { "type": "divider" },  # Add a divider to separate sections clearly
         ]
     }
 
