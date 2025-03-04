@@ -146,6 +146,7 @@ def job():
     WHERE line_name = 'STTR01'
     AND STATION_NAME = '040'
     AND PARAMETER_NAME = 'Force process value'
+    AND parameter_id = 2
     AND overall_process_status = 'NOK'
     AND recorded_at > '{recorded_at}'
     GROUP BY STATION_NAME, PARAMETER_NAME
