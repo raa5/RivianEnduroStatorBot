@@ -333,6 +333,7 @@ def job():
 
     df_combined["PARAMETER_NAME"] = df_combined["ALARM_DESCRIPTION"].fillna(df_combined["PARAMETER_NAME"])
     df_combined.drop(columns=["ALARM_DESCRIPTION"], inplace=True)  # Remove old column
+    df_combined = df_combined[df_combined["COUNT"] > 0]
 
 
     # Sort combined DataFrame by 'COUNT' column
