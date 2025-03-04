@@ -5,6 +5,7 @@ import json
 import schedule
 import time
 import pytz
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
