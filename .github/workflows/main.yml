@@ -28,8 +28,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # - name: Install dependencies
-      #   run: pip install --cache-dir ~/.cache/pip pandas requests slack_sdk schedule databricks matplotlib pyspark databricks-sql-connector
+      - name: Install dependencies
+        run: pip install --cache-dir ~/.cache/pip pandas requests slack_sdk schedule databricks matplotlib pyspark databricks-sql-connector
 
       - name: Set timezone
         run: sudo timedatectl set-timezone America/Chicago
