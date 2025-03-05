@@ -19,17 +19,18 @@ jobs:
         with:
           python-version: '3.10'
 
-      # Caching Python dependencies
+      # Caching dependencies properly using requirements.txt
       - name: Cache Python dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: pip install --cache-dir ~/.cache/pip pandas requests slack_sdk schedule databricks matplotlib pyspark databricks-sql-connector
+        run: |
+          pip install --cache-dir ~/.cache/pip -r requirements.txt
 
       - name: Set timezone
         run: sudo timedatectl set-timezone America/Chicago
