@@ -67,7 +67,17 @@ def generate_sttr30_nest_chart(df, filename="sttr30_nest_chart.png"):
     if df.empty:
         print("No data available for STTR30 Nest count.")
         return None
-    
+
+    # Convert column names to uppercase
+    df.columns = [col.upper() for col in df.columns]
+
+    # Debugging print to check column names
+    print("Available columns:", df.columns)
+
+    if "COUNT" not in df.columns or "NEST_ORIGIN" not in df.columns:
+        print("Error: Expected columns 'COUNT' and 'NEST_ORIGIN' not found.")
+        return None
+
     plt.figure(figsize=(12, 5))
     plt.bar(df["NEST_ORIGIN"], df["COUNT"], color="teal")
 
@@ -376,45 +386,38 @@ def job():
     """
 
     query_sttr30_nest_count = f"""
-    with
-    nest_origin as (
-    select station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
-    from manufacturing.spinal.fct_spinal_parameter_records
-    where 
-        shop_name = 'DU02'
-        and line_name = 'STTR01'
-        and station_name like '030%'
-        and parameter_name = 'Nest'
+     WITH nest_origin AS (
+        SELECT station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
+        FROM manufacturing.spinal.fct_spinal_parameter_records
+        WHERE 
+            shop_name = 'DU02'
+            AND line_name = 'STTR01'
+            AND station_name LIKE '030%'
+            AND parameter_name = 'Nest'
     ),
-    
-    weld_origin as (
-    select station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
-    from manufacturing.spinal.fct_spinal_parameter_records
-    where 
-        shop_name = 'DU02'
-        and line_name = 'STTR01'
-        and station_name like '060'
-        and parameter_name ilike 'WELDING TEMPLATE NUMBER'
+    weld_origin AS (
+        SELECT station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
+        FROM manufacturing.spinal.fct_spinal_parameter_records
+        WHERE 
+            shop_name = 'DU02'
+            AND line_name = 'STTR01'
+            AND station_name LIKE '060'
+            AND parameter_name ILIKE 'WELDING TEMPLATE NUMBER'
     )
-    
-    select distinct
-        gen.product_serial as parent_serial,
-        nest.station_name as nest_origin,
-        nest.parameter_value_raw as nest_number,
-        gen.consumed_at as nest_consumed_at,
-        weld.parameter_value_raw as weld_station_060
-    
-    from manufacturing.mes.fct_genealogy as gen
-    join nest_origin as nest
-        on gen.scanned_child_serial = nest.product_serial
-    join weld_origin as weld
-        on gen.product_serial = weld.product_serial
-    where 
+    SELECT 
+        nest.station_name AS NEST_ORIGIN,
+        COUNT(*) AS COUNT  -- Ensure COUNT column exists
+    FROM manufacturing.mes.fct_genealogy AS gen
+    JOIN nest_origin AS nest
+        ON gen.scanned_child_serial = nest.product_serial
+    JOIN weld_origin AS weld
+        ON gen.product_serial = weld.product_serial
+    WHERE 
         shop_name = 'DU02'
-        and line_name = 'STTR01'
-        and gen.consumed_at >= '2025-03-04 07:00:00.000'
-    
-    order by nest_consumed_at desc;
+        AND line_name = 'STTR01'
+        AND gen.consumed_at >= '{recorded_at}'
+    GROUP BY nest.station_name
+    ORDER BY COUNT DESC
     """
 
     # Execute queries and fetch data into DataFrames
