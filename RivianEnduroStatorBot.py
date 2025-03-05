@@ -5,7 +5,6 @@ import json
 import schedule
 import time
 import pytz
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -37,17 +36,6 @@ def send_message_to_slack(channel, text):
     except SlackApiError as e:
         print(f"Error sending message to Slack: {e.response['error']}")
 
-def send_image_to_slack(channel, image_path, title="Pareto Chart"):
-    try:
-        response = client.files_upload(
-            channels=channel,
-            file=image_path,
-            title=title
-        )
-        print(f"Image uploaded to {channel} with timestamp {response['file']['id']}")
-    except SlackApiError as e:
-        print(f"Error uploading image to Slack: {e.response['error']}")
-        
 def create_databricks_connection():
     return sql.connect(
         server_hostname=DATABRICKS_SERVER_HOSTNAME,
@@ -61,38 +49,6 @@ def execute_query(query, conn):
         result = cursor.fetchall()
         columns = [desc[0].upper() for desc in cursor.description]
         return pd.DataFrame(result, columns=columns)
-
-def generate_sttr30_nest_chart(df, filename="sttr30_nest_chart.png"):
-    """Generates a professional bar chart for STTR30 Nest count."""
-    if df.empty:
-        print("No data available for STTR30 Nest count.")
-        return None
-
-    # Convert column names to uppercase
-    df.columns = [col.upper() for col in df.columns]
-
-    # Debugging print to check column names
-    print("Available columns:", df.columns)
-
-    if "COUNT" not in df.columns or "NEST_ORIGIN" not in df.columns:
-        print("Error: Expected columns 'COUNT' and 'NEST_ORIGIN' not found.")
-        return None
-
-    plt.figure(figsize=(12, 5))
-    plt.bar(df["NEST_ORIGIN"], df["COUNT"], color="teal")
-
-    plt.xlabel("STTR-030 Hairpin of Origin", fontsize=12, fontweight="bold")
-    plt.ylabel("Quantity", fontsize=12, fontweight="bold")
-    plt.title("STTR-30 Total Nest Produced", fontsize=14, fontweight="bold")
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
-
-    # Annotate bars with values
-    for index, value in enumerate(df["COUNT"]):
-        plt.text(index, value + 1, str(value), ha="center", fontsize=12, fontweight='bold')
-
-    plt.savefig(filename, bbox_inches='tight')
-    plt.close()
-    return filename
 
 def job():
     t0 = time.time()
@@ -385,41 +341,6 @@ def job():
     GROUP BY ALL
     """
 
-    query_sttr30_nest_count = f"""
-     WITH nest_origin AS (
-        SELECT station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
-        FROM manufacturing.spinal.fct_spinal_parameter_records
-        WHERE 
-            shop_name = 'DU02'
-            AND line_name = 'STTR01'
-            AND station_name LIKE '030%'
-            AND parameter_name = 'Nest'
-    ),
-    weld_origin AS (
-        SELECT station_name, parameter_name, product_serial, parameter_value_raw, overall_process_status, recorded_at
-        FROM manufacturing.spinal.fct_spinal_parameter_records
-        WHERE 
-            shop_name = 'DU02'
-            AND line_name = 'STTR01'
-            AND station_name LIKE '060'
-            AND parameter_name ILIKE 'WELDING TEMPLATE NUMBER'
-    )
-    SELECT 
-        nest.station_name AS NEST_ORIGIN,
-        COUNT(*) AS COUNT  -- Ensure COUNT column exists
-    FROM manufacturing.mes.fct_genealogy AS gen
-    JOIN nest_origin AS nest
-        ON gen.scanned_child_serial = nest.product_serial
-    JOIN weld_origin AS weld
-        ON gen.product_serial = weld.product_serial
-    WHERE 
-        shop_name = 'DU02'
-        AND line_name = 'STTR01'
-        AND gen.consumed_at >= '2025-03-04 07:00:00.000'
-    GROUP BY nest.station_name
-    ORDER BY COUNT DESC
-    """
-
     # Execute queries and fetch data into DataFrames
     df_20 = pd.read_sql(query_20, conn)
     df_40 = pd.read_sql(query_40, conn)
@@ -432,21 +353,6 @@ def job():
     df_210 = pd.read_sql(query_210, conn)
     
     df_210_unique_sn = pd.read_sql(query_210_unique_sn, conn)
-
-    df_nest_count = execute_query(query_sttr30_nest_count, conn)
-
-    if df_nest_count.empty:
-        print("No Nest Origin data found.")
-        return
-
-    # Generate the chart
-    chart_path = generate_sttr30_nest_chart(df_nest_count)
-
-    # Send chart to Slack
-    if chart_path:
-        send_image_to_slack(url, chart_path)
-
-    print("Task completed.")
     
 
 
