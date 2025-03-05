@@ -415,7 +415,7 @@ def job():
     WHERE 
         shop_name = 'DU02'
         AND line_name = 'STTR01'
-        AND gen.consumed_at >= '{recorded_at}'
+        AND gen.consumed_at >= '2025-03-04 07:00:00.000'
     GROUP BY nest.station_name
     ORDER BY COUNT DESC
     """
