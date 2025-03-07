@@ -431,6 +431,93 @@ def job():
         group by all
     """
     
+    query_50_hairpin_origin = f"""
+    with
+
+    nest_parameter_records as 
+        (
+        select product_serial, station_name, parameter_name, parameter_value_raw, overall_process_status, recorded_at
+        -- from manufacturing.mes.fct_parameter_records
+        from manufacturing.spinal.fct_spinal_parameter_records
+        where 
+            shop_name = 'DU02'
+            and line_name = 'STTR01'
+            and station_name like '030%'
+            and parameter_name = 'Nest'
+        ),
+
+    genealogy_hist as 
+        (
+        select product_serial, scanned_child_serial, consumed_at, product_part_desc, child_part_desc, scanned_child_data
+        from manufacturing.mes.fct_genealogy_hist
+        where
+            shop_name = 'DU02'
+            and line_name = 'STTR01'
+        ),
+
+    stack_serial as 
+        (
+        select scanned_child_serial, product_serial
+        from manufacturing.mes.fct_genealogy_hist
+        where line_name = 'STTR01'
+        and scanned_child_part in ('PT00237854-C') 
+        ),
+
+    wire_spool as 
+        (
+        select product_serial, product_part, parameter_name, parameter_value_raw, recorded_at
+        -- from manufacturing.mes.fct_parameter_records
+        from manufacturing.spinal.fct_spinal_parameter_records
+        where
+            shop_name = 'DU02'
+            and line_name = 'STTR01'
+            and station_name like '030%'
+            and parameter_name ilike '%batch%'
+            and parameter_value_raw ilike '%PT00237846-C%' 
+        ),
+
+    op_fifty as
+        (
+        select product_serial, station_name, recorded_at, result_status
+        -- from manufacturing.mes.fct_parameter_records
+        from manufacturing.spinal.fct_spinal_parameter_records
+        where
+            line_name = 'STTR01'
+            and station_name ilike '%050%'
+
+        )
+
+    select distinct
+        -- SS.scanned_child_serial as Stack_Serial,
+        -- WS.parameter_value_raw as Copper_Wire_Spool,
+        -- NPR.product_serial as Nest_Product_Serial,
+        count(distinct GH.product_serial) as COUNT,
+        opf.station_name as STATION_NAME,
+        NPR.station_name as Sttr_030_Hairpin_Origin
+        -- GH.product_serial as Stator_Assembly_Serial_Number,
+        -- opf.result_status as Sttr_050_Result_Status,
+        -- opf.recorded_at as Sttr_050_Recorded_At_Central_Time,
+        -- substring (WS.parameter_value_raw, position('C' in ws.parameter_value_raw) + 1, 8) as Copper_Wire_8_Digit
+
+    from nest_parameter_records as NPR
+
+    join genealogy_hist as GH
+        on NPR.product_serial = GH.scanned_child_serial
+    join op_fifty as opf
+        on GH.product_serial = opf.product_serial
+    join stack_serial as SS
+        ON GH.product_serial = SS.product_serial
+    left join wire_spool as WS
+        on NPR.product_serial = WS.product_serial
+
+    WHERE
+        opf.station_name ILIKE '%050%'
+        and opf.result_status = 'FAIL'
+        and recorded_at > '{recorded_at}'
+        and opf.recorded_at > '2025-03-07 07:00:00.000'
+        group by opf.station_name, NPR.station_name
+    """
+    
     query_65_hairpin_origin = f"""
     with
 
@@ -543,6 +630,7 @@ def job():
     
     df_210_unique_sn = pd.read_sql(query_210_unique_sn, conn)
     df_40_hairpin_origin = pd.read_sql(query_40_hairpin_origin, conn)
+    df_50_hairpin_origin = pd.read_sql(query_50_hairpin_origin, conn)
     df_65_hairpin_origin = pd.read_sql(query_65_hairpin_origin, conn)
 
 
@@ -602,9 +690,9 @@ def job():
 
     df_combined_str = df_to_table(df_combined)
     df_sum_str = df_to_table(df_sum)
-    df_hairpin_origin = pd.concat([df_40_hairpin_origin, df_65_hairpin_origin], ignore_index=True)
-    df_hairpin_origin_str = df_to_table(df_hairpin_origin
-                                        )
+    df_hairpin_origin = pd.concat([df_40_hairpin_origin, df_50_hairpin_origin, df_65_hairpin_origin], ignore_index=True)
+    df_hairpin_origin_str = df_to_table(df_hairpin_origin)
+    
     # df_40_hairpin_origin_str = df_to_table(df_40_hairpin_origin)
     # df_65_hairpin_origin_str = df_to_table(df_65_hairpin_origin)
 
@@ -643,12 +731,11 @@ def job():
                 }
             
             },
-            { "type": "divider" },  # Add a divider to separate sections clearly
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Press Fails by Hairpin:*"
+                    "text": "*Fails by Hairpin Station:*"
                 }
             },
             {
@@ -659,6 +746,7 @@ def job():
                 }
             
             },
+            { "type": "divider" },  # Add a divider to separate sections clearly
         ]
     }
 
