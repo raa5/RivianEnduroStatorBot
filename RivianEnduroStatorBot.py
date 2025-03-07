@@ -513,8 +513,7 @@ def job():
     WHERE
         opf.station_name ILIKE '%050%'
         and opf.result_status = 'FAIL'
-        and recorded_at > '{recorded_at}'
-        and opf.recorded_at > '2025-03-07 07:00:00.000'
+        and opf.recorded_at > '{recorded_at}'
         group by opf.station_name, NPR.station_name
     """
     
