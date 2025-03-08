@@ -690,6 +690,7 @@ def job():
     df_combined_str = df_to_table(df_combined)
     df_sum_str = df_to_table(df_sum)
     df_hairpin_origin = pd.concat([df_40_hairpin_origin, df_50_hairpin_origin, df_65_hairpin_origin], ignore_index=True)
+    df_hairpin_origin = df_hairpin_origin.sort_values(['COUNT'], ascending=False, ignore_index=True)
     df_hairpin_origin_str = df_to_table(df_hairpin_origin)
     
     # df_40_hairpin_origin_str = df_to_table(df_40_hairpin_origin)
