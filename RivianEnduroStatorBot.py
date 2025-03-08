@@ -1282,7 +1282,10 @@ def job():
             print("Warning: STATION_NAME or COUNT column missing from df_210_unique_sn. Falling back to regular sum.")
 
         # Convert NaNs to 0 and ensure integer counts
-        df_sum_summary["COUNT"] = df_sum_summary["COUNT"].fillna(0).astype(int)
+        if not df_sum_summary.empty and "COUNT" in df_sum_summary.columns:
+            df_sum_summary["COUNT"] = df_sum_summary["COUNT"].fillna(0).astype(int)
+        else:
+            pass
 
         # Sort results
         df_sum_summary = df_sum_summary[df_sum_summary["COUNT"] > 0]
