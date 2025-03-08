@@ -58,7 +58,7 @@ def job():
     utc_now = datetime.now(pytz.utc)  # Get current UTC time
     local_now = utc_now.astimezone(local_tz)  # Convert to local timezone
 
-    one_hour_before = datetime.now() - timedelta(hours=1)
+    one_hour_before = datetime.now() - timedelta(hours=100)
     recorded_at = one_hour_before.strftime('%Y-%m-%d %H:00')
 
     # Define the queries
