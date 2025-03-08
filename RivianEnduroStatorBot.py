@@ -674,7 +674,11 @@ def job():
     df_sum = df_sum.sort_values(['COUNT'], ascending=False, ignore_index=True)
     
 
-    if (15 <= local_now.hour < 16) or (5 <= local_now.hour < 6):
+    df_combined_summary = pd.DataFrame()  # Empty DataFrame
+    df_sum_summary = pd.DataFrame()
+    df_hairpin_origin_summary = pd.DataFrame()
+
+    if (21 <= local_now.hour < 22) or (5 <= local_now.hour < 6):
         # Define the queries for summary post
         query_20_summary = f"""
         select 
