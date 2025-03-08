@@ -59,8 +59,8 @@ def job():
     local_now = utc_now.astimezone(local_tz)  # Convert to local timezone
 
     one_hour_before = datetime.now() - timedelta(hours=100)
-    summary_time = datetime.now() - timedelta(hours=8)
     recorded_at = one_hour_before.strftime('%Y-%m-%d %H:00')
+    summary_time = datetime.now() - timedelta(hours=24)
     recorded_at_summary = summary_time.strftime('%Y-%m-%d %H:00')
 
     # Define the queries
@@ -678,7 +678,7 @@ def job():
     df_sum_summary = pd.DataFrame()
     df_hairpin_origin_summary = pd.DataFrame()
 
-    if (21 <= local_now.hour < 22) or (5 <= local_now.hour < 6):
+    if (21 <= local_now.hour < 23) or (5 <= local_now.hour < 6):
         # Define the queries for summary post
         query_20_summary = f"""
         select 
@@ -1281,11 +1281,6 @@ def job():
         else:
             print("Warning: STATION_NAME or COUNT column missing from df_210_unique_sn. Falling back to regular sum.")
 
-        # Convert NaNs to 0 and ensure integer counts
-        if not df_sum_summary.empty and "COUNT" in df_sum_summary.columns:
-            df_sum_summary["COUNT"] = df_sum_summary["COUNT"].fillna(0).astype(int)
-        else:
-            pass
 
         # Sort results
         df_sum_summary = df_sum_summary[df_sum_summary["COUNT"] > 0]
