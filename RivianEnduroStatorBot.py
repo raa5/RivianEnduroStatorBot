@@ -679,7 +679,7 @@ def job():
         group by opsf.station_name, NPR.station_name
     """
 
-    if (00 <= current_hour) or (5 <= current_hour < 6):
+    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
         # Define the queries
         ########################################################################################
         # Query 20 - Summary
@@ -1531,7 +1531,7 @@ def job():
         ]
     }
 
-    if (00 <= current_hour) or (5 <= current_hour < 6):
+    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
         payload["blocks"].extend(
             [
                 {"type": "divider"},
