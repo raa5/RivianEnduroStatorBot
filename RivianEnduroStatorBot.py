@@ -1391,7 +1391,11 @@ def job():
             ],
             ignore_index=True,
         )
-        df_hairpin_origin_summary = df_hairpin_origin_summary.sort_values(["COUNT", "STATION_NAME"], ascending=[False, True], ignore_index=True)
+        
+        df_hairpin_origin_summary["COUNT"] = pd.to_numeric(df_hairpin_origin_summary["COUNT"])
+        df_hairpin_origin_summary["STATION_NAME"] = pd.to_numeric(df_hairpin_origin_summary["STATION_NAME"])
+        df_hairpin_origin_summary = df_hairpin_origin_summary.sort_values(by=["COUNT", "STATION_NAME"], ascending=[False, True], ignore_index=True)
+        
         df_hairpin_origin_summary_str = df_to_table(df_hairpin_origin_summary)
 
     ########################################################################################
