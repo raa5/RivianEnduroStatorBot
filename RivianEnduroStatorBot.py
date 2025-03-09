@@ -81,9 +81,9 @@ def job():
     current_hour = local_now.hour
     current_time = local_now.strftime("%Y-%m-%d %H:00")
 
-    one_hour_before = datetime.now() - timedelta(hours=1)
+    one_hour_before = datetime.now() - timedelta(hours=200)
     recorded_at = one_hour_before.strftime("%Y-%m-%d %H:00")
-    eight_hours_before = datetime.now() - timedelta(hours=8)
+    eight_hours_before = datetime.now() - timedelta(hours=200)
     recorded_at_summary = eight_hours_before.strftime("%Y-%m-%d %H:00")
 
     # Define the queries
@@ -227,7 +227,7 @@ def job():
     FROM manufacturing.spinal.fct_spinal_parameter_records
     WHERE line_name = 'STTR01'
     AND STATION_NAME = '065'
-    AND overall_process_status = 'NOK'
+    -- AND overall_process_status = 'NOK'
     AND recorded_at > '{recorded_at}'
     AND (
         (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
@@ -824,7 +824,7 @@ def job():
         FROM manufacturing.spinal.fct_spinal_parameter_records
         WHERE line_name = 'STTR01'
         AND STATION_NAME = '065'
-        AND overall_process_status = 'NOK'
+        -- AND overall_process_status = 'NOK'
         AND recorded_at > '{recorded_at_summary}'
         AND (
             (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
