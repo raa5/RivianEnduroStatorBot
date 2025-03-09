@@ -679,7 +679,7 @@ def job():
         group by opsf.station_name, NPR.station_name
     """
 
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (14 <= current_hour < 16) or (5 <= current_hour < 6):
         # Define the queries
         ########################################################################################
         # Query 20 - Summary
@@ -1391,7 +1391,7 @@ def job():
             ],
             ignore_index=True,
         )
-        df_hairpin_origin_summary = df_hairpin_origin_summary.sort_values(["COUNT"], ascending=False, ignore_index=True)
+        df_hairpin_origin_summary = df_hairpin_origin_summary.sort_values(["COUNT", "STATION_NAME"], ascending=[False, True], ignore_index=True)
         df_hairpin_origin_summary_str = df_to_table(df_hairpin_origin_summary)
 
     ########################################################################################
@@ -1531,7 +1531,7 @@ def job():
         ]
     }
 
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (14 <= current_hour < 16) or (5 <= current_hour < 6):
         payload["blocks"].extend(
             [
                 {"type": "divider"},
