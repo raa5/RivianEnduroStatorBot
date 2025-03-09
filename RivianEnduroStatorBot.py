@@ -83,7 +83,7 @@ def job():
 
     one_hour_before = datetime.now() - timedelta(hours=1)
     recorded_at = one_hour_before.strftime("%Y-%m-%d %H:00")
-    eight_hours_before = datetime.now() - timedelta(hours=200)
+    eight_hours_before = datetime.now() - timedelta(hours=8)
     recorded_at_summary = eight_hours_before.strftime("%Y-%m-%d %H:00")
 
     # Define the queries
