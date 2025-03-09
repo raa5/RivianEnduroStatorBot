@@ -1545,9 +1545,9 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn", "text": "*Fail count by Parameter:* "
-                        + recorded_at
+                        + recorded_at_summary
                         + " to "
-                        + (one_hour_before + timedelta(hours=200)).strftime("%Y-%m-%d H:00"),
+                        + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
                     },
                 },
                 {
