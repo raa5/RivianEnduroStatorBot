@@ -627,12 +627,26 @@ def job():
 
     op_sixty_five as
         (
-        select product_serial, station_name, recorded_at, result_status, work_element
-        -- from manufacturing.mes.fct_parameter_records
-        from manufacturing.spinal.fct_spinal_parameter_records
-        where
-            line_name = 'STTR01'
-            and station_name ilike '%065%'
+        SELECT DISTINCT product_serial, STATION_NAME, PARAMETER_NAME, recorded_at
+        -- SELECT count(DISTINCT product_serial) as COUNT, STATION_NAME, PARAMETER_NAME
+            FROM manufacturing.spinal.fct_spinal_parameter_records
+            WHERE line_name = 'STTR01'
+            AND STATION_NAME = '065'
+            -- AND overall_process_status = 'NOK'
+            -- AND recorded_at > '2025-03-07'
+            AND (
+                (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
+                (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
+                (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
+                (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
+                (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
+                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
+                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+            )
+            -- GROUP BY STATION_NAME, PARAMETER_NAME
+            -- ORDER BY COUNT DESC
 
         ),
 
@@ -669,12 +683,11 @@ def job():
         ON GH.product_serial = SS.product_serial
     left join wire_spool as WS
         on NPR.product_serial = WS.product_serial
-    join STTR_065_WEs sfwe
-        on opsf.work_element = sfwe.DELMIA_WE_Name
+    -- join STTR_065_WEs sfwe
+    --     on opsf.work_element = sfwe.DELMIA_WE_Name
 
     WHERE
         opsf.station_name ILIKE '%065%'
-        and opsf.result_status != 'PASS'
         and opsf.recorded_at > '{recorded_at}'
         group by opsf.station_name, NPR.station_name
     """
@@ -1224,12 +1237,26 @@ def job():
 
         op_sixty_five as
             (
-            select product_serial, station_name, recorded_at, result_status, work_element
-            -- from manufacturing.mes.fct_parameter_records
-            from manufacturing.spinal.fct_spinal_parameter_records
-            where
-                line_name = 'STTR01'
-                and station_name ilike '%065%'
+            SELECT DISTINCT product_serial, STATION_NAME, PARAMETER_NAME, recorded_at
+            -- SELECT count(DISTINCT product_serial) as COUNT, STATION_NAME, PARAMETER_NAME
+                FROM manufacturing.spinal.fct_spinal_parameter_records
+                WHERE line_name = 'STTR01'
+                AND STATION_NAME = '065'
+                -- AND overall_process_status = 'NOK'
+                -- AND recorded_at > '2025-03-07'
+                AND (
+                    (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                    (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
+                    (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                    (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
+                    (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
+                    (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
+                    (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
+                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
+                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+                )
+                -- GROUP BY STATION_NAME, PARAMETER_NAME
+                -- ORDER BY COUNT DESC
 
             ),
 
@@ -1266,12 +1293,11 @@ def job():
             ON GH.product_serial = SS.product_serial
         left join wire_spool as WS
             on NPR.product_serial = WS.product_serial
-        join STTR_065_WEs sfwe
-            on opsf.work_element = sfwe.DELMIA_WE_Name
+        -- join STTR_065_WEs sfwe
+        --     on opsf.work_element = sfwe.DELMIA_WE_Name
 
         WHERE
             opsf.station_name ILIKE '%065%'
-            and opsf.result_status != 'PASS'
             and opsf.recorded_at > '{recorded_at_summary}'
             group by opsf.station_name, NPR.station_name
         """
