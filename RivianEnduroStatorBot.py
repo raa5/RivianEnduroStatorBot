@@ -1538,7 +1538,7 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "*🚨 Summary Data (Last Shift)*",
+                        "text": "*🚨 Shift Summary (Last Shift)*",
                     },
                 },
                 {
@@ -1547,7 +1547,7 @@ def job():
                         "type": "mrkdwn", "text": "*Fail count by Parameter:* "
                         + recorded_at
                         + " to "
-                        + (one_hour_before + timedelta(hours=200)).strftime("%YYYY-MM-DD H:00"),
+                        + (one_hour_before + timedelta(hours=200)).strftime("%Y-%m-%d H:00"),
                     },
                 },
                 {
