@@ -79,6 +79,7 @@ def job():
     utc_now = datetime.now(pytz.utc)  # Get current UTC time
     local_now = utc_now.astimezone(local_tz)  # Convert to local timezone
     current_hour = local_now.hour
+    current_time = local_now.timestamp()
 
     one_hour_before = datetime.now() - timedelta(hours=1)
     recorded_at = one_hour_before.strftime("%Y-%m-%d %H:00")
@@ -1547,7 +1548,8 @@ def job():
                         "type": "mrkdwn", "text": "*Fail count by Parameter:* "
                         + recorded_at_summary
                         + " to "
-                        + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
+                        + current_time,
+                        # + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
                     },
                 },
                 {
