@@ -1286,16 +1286,10 @@ def job():
         df_210_summary = pd.read_sql(query_210_summary, conn)
 
         df_210_unique_sn_summary = pd.read_sql(query_210_unique_sn_summary, conn)
-        df_40_hairpin_origin_summary = pd.read_sql(
-            query_40_hairpin_origin_summary, conn
-        )
-        df_50_hairpin_origin_summary = pd.read_sql(
-            query_50_hairpin_origin_summary, conn
-        )
-        df_65_hairpin_origin_summary = pd.read_sql(
-            query_65_hairpin_origin_summary, conn
-        )
-
+        df_40_hairpin_origin_summary = pd.read_sql(query_40_hairpin_origin_summary, conn)
+        df_50_hairpin_origin_summary = pd.read_sql(query_50_hairpin_origin_summary, conn)
+        df_65_hairpin_origin_summary = pd.read_sql(query_65_hairpin_origin_summary, conn)
+        
         ########################################################################################
         # Combine DataFrames
         ########################################################################################
@@ -1501,9 +1495,7 @@ def job():
             {
                 "type": "section",
                 "text": {
-                    "type": "mrkdwn",
-                    # "text": "Fail COUNT by Parameter: " + datetime.now().strftime('%Y-%m-%d %H:00')
-                    "text": "*🚨Fail count by Parameter:* "
+                    "type": "mrkdwn", "text": "*🚨Fail count by Parameter:* "
                     + recorded_at
                     + " to "
                     + (one_hour_before + timedelta(hours=1)).strftime("%H:00"),
@@ -1544,7 +1536,16 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "*🚨 Summary Data (Last 8 Hours)*",
+                        "text": "*🚨 Summary Data (Last Shift)*",
+                    },
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn", "text": "*Fail count by Parameter:* "
+                        + recorded_at
+                        + " to "
+                        + (one_hour_before + timedelta(hours=200)).strftime("%H:00"),
                     },
                 },
                 {
@@ -1556,11 +1557,27 @@ def job():
                 },
                 {
                     "type": "section",
+                    "text": {"type": "mrkdwn", "text": "*Fails by Station Pareto:*"},
+                },
+                {
+                    "type": "section",
                     "text": {
                         "type": "mrkdwn",
                         "text": "```" + df_to_table(df_sum_summary) + "```",
                     },
                 },
+                {
+                    "type": "section",
+                    "text": {"type": "mrkdwn", "text": "*Fails by Hairpin Station:*"},
+                    },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "```" + df_hairpin_origin_summary_str + "```",
+                    },
+                },
+                {"type": "divider"},  # Add a divider to separate sections clearly
             ]
         )
 
