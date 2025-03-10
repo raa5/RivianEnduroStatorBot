@@ -230,15 +230,15 @@ def job():
     -- AND overall_process_status = 'NOK'
     AND recorded_at > '{recorded_at}'
     AND (
-        (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+        (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
         (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
         (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
         (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
         (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
         (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-        (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-        (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+        (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+        (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
     )
     GROUP BY STATION_NAME, PARAMETER_NAME
     ORDER BY COUNT DESC
@@ -635,15 +635,15 @@ def job():
             -- AND overall_process_status = 'NOK'
             -- AND recorded_at > '2025-03-07'
             AND (
-                (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
                 (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-                (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
                 (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
                 (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
                 (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
                 (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 10 OR parameter_value_num > 100000)) OR
+                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
             )
             -- GROUP BY STATION_NAME, PARAMETER_NAME
             -- ORDER BY COUNT DESC
@@ -840,15 +840,15 @@ def job():
         -- AND overall_process_status = 'NOK'
         AND recorded_at > '{recorded_at_summary}'
         AND (
-            (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+            (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
             (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
             (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
             (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
             (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
             (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
         )
         GROUP BY STATION_NAME, PARAMETER_NAME
         ORDER BY COUNT DESC
@@ -1245,15 +1245,15 @@ def job():
                 -- AND overall_process_status = 'NOK'
                 -- AND recorded_at > '2025-03-07'
                 AND (
-                    (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                    (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
                     (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-                    (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                    (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
                     (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
                     (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
                     (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
                     (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 100000))
                 )
                 -- GROUP BY STATION_NAME, PARAMETER_NAME
                 -- ORDER BY COUNT DESC
