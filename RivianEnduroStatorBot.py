@@ -91,81 +91,15 @@ def job():
     # Query 20 - Every Hour
     ########################################################################################
     query_20 = f"""
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Assembly error' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = '{0} Assembly error {1}'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paperjam: insulating 1' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paperjam: insulating 2' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = 'Paperjam Station [ __KeyInsulating2 ]'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Slot Search Fail' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%No Slot at Stator detected%'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Post-Forming' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%Cylinder [ __KeyPostForming%Cylinder working position%'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paper Pusher' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike ('%Axis not in control [ PaperPusher (Z6)%') 
-    group by STATION_NAME
+    select count(distinct product_serial) as COUNT, STATION_NAME , work_location_desc as PARAMETER_NAME
+    from manufacturing.mes.fct_work_location_jobs
+    where shop_name = 'DU02'
+    and line_name = 'STTR01'
+    and station_name = '020'
+    and started_at > '{recorded_at}'
+    and work_location_name = '02'
+    and job_status = 'NOK'
+    group by station_name, work_location_desc
     """
     ########################################################################################
     # Query 40 - Every Hour
@@ -695,88 +629,23 @@ def job():
 #########################################################################################
 # If Statement for Summary Queries at EOS
 #########################################################################################
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (20 <= current_hour < 21) or (5 <= current_hour < 6):
         # Define the queries
         ########################################################################################
         # Query 20 - Summary
         ########################################################################################
         query_20_summary = f"""
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Assembly error' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = '{0} Assembly error {1}'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paperjam: insulating 1' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paperjam: insulating 2' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = 'Paperjam Station [ __KeyInsulating2 ]'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Slot Search Fail' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike '%No Slot at Stator detected%'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Post-Forming' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike '%Cylinder [ __KeyPostForming%Cylinder working position%'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paper Pusher' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike ('%Axis not in control [ PaperPusher (Z6)%') 
-        group by STATION_NAME
+        select count(distinct product_serial) as COUNT, STATION_NAME , work_location_desc as PARAMETER_NAME
+        from manufacturing.mes.fct_work_location_jobs
+        where shop_name = 'DU02'
+        and line_name = 'STTR01'
+        and station_name = '020'
+        and started_at > '{recorded_at_summary}'
+        and work_location_name = '02'
+        and job_status = 'NOK'
+        group by station_name, work_location_desc
         """
+        
         ########################################################################################
         # Query 40 - Summary
         ########################################################################################
@@ -1564,7 +1433,7 @@ def job():
         ]
     }
 
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (20 <= current_hour < 21) or (5 <= current_hour < 6):
         payload["blocks"].extend(
             [
                 {"type": "divider"},
