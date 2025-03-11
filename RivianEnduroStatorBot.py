@@ -629,7 +629,7 @@ def job():
 #########################################################################################
 # If Statement for Summary Queries at EOS
 #########################################################################################
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (20 <= current_hour < 21) or (5 <= current_hour < 6):
         # Define the queries
         ########################################################################################
         # Query 20 - Summary
@@ -1433,7 +1433,7 @@ def job():
         ]
     }
 
-    if (15 <= current_hour < 16) or (5 <= current_hour < 6):
+    if (20 <= current_hour < 21) or (5 <= current_hour < 6):
         payload["blocks"].extend(
             [
                 {"type": "divider"},
