@@ -91,81 +91,15 @@ def job():
     # Query 20 - Every Hour
     ########################################################################################
     query_20 = f"""
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Assembly error' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = '{0} Assembly error {1}'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paperjam: insulating 1' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paperjam: insulating 2' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description = 'Paperjam Station [ __KeyInsulating2 ]'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Slot Search Fail' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%No Slot at Stator detected%'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Post-Forming' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike '%Cylinder [ __KeyPostForming%Cylinder working position%'
-    group by STATION_NAME
-
-    union all
-
-    select 
-        COUNT(*) as COUNT,
-        '020' as STATION_NAME,
-        'Paper Pusher' as ALARM_DESCRIPTION
-    from manufacturing.drive_unit.fct_du02_scada_alarms
-    where alarm_source_scada_short_name ilike '%STTR01-020%'
-    AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
-    and alarm_priority_desc in ('high', 'critical')
-    and alarm_description ilike ('%Axis not in control [ PaperPusher (Z6)%') 
-    group by STATION_NAME
+    select count(distinct product_serial) as COUNT, STATION_NAME , work_location_desc as PARAMETER_NAME
+    from manufacturing.mes.fct_work_location_jobs
+    where shop_name = 'DU02'
+    and line_name = 'STTR01'
+    and station_name = '020'
+    and started_at > '{recorded_at}'
+    and work_location_name = '02'
+    and job_status = 'NOK'
+    group by station_name, work_location_desc
     """
     ########################################################################################
     # Query 40 - Every Hour
@@ -230,15 +164,15 @@ def job():
     -- AND overall_process_status = 'NOK'
     AND recorded_at > '{recorded_at}'
     AND (
-        (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+        (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
         (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
         (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
-        (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
-        (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
+        (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 9 OR parameter_value_num > 45)) OR
+        (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -9)) OR
         (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-        (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-        (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+        (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+        (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
     )
     GROUP BY STATION_NAME, PARAMETER_NAME
     ORDER BY COUNT DESC
@@ -635,15 +569,15 @@ def job():
             -- AND overall_process_status = 'NOK'
             -- AND recorded_at > '2025-03-07'
             AND (
-                (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
                 (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-                (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
                 (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
                 (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
                 (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
                 (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 10 OR parameter_value_num > 100000)) OR
+                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
             )
             -- GROUP BY STATION_NAME, PARAMETER_NAME
             -- ORDER BY COUNT DESC
@@ -701,82 +635,17 @@ def job():
         # Query 20 - Summary
         ########################################################################################
         query_20_summary = f"""
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Assembly error' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = '{0} Assembly error {1}'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paperjam: insulating 1' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = 'Paperjam Station [ __KeyInsulating1 ]'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paperjam: insulating 2' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description = 'Paperjam Station [ __KeyInsulating2 ]'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Slot Search Fail' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike '%No Slot at Stator detected%'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Post-Forming' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike '%Cylinder [ __KeyPostForming%Cylinder working position%'
-        group by STATION_NAME
-
-        union all
-
-        select 
-            COUNT(*) as COUNT,
-            '020' as STATION_NAME,
-            'Paper Pusher' as ALARM_DESCRIPTION
-        from manufacturing.drive_unit.fct_du02_scada_alarms
-        where alarm_source_scada_short_name ilike '%STTR01-020%'
-        AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
-        and alarm_priority_desc in ('high', 'critical')
-        and alarm_description ilike ('%Axis not in control [ PaperPusher (Z6)%') 
-        group by STATION_NAME
+        select count(distinct product_serial) as COUNT, STATION_NAME , work_location_desc as PARAMETER_NAME
+        from manufacturing.mes.fct_work_location_jobs
+        where shop_name = 'DU02'
+        and line_name = 'STTR01'
+        and station_name = '020'
+        and started_at > '{recorded_at_summary}'
+        and work_location_name = '02'
+        and job_status = 'NOK'
+        group by station_name, work_location_desc
         """
+        
         ########################################################################################
         # Query 40 - Summary
         ########################################################################################
@@ -840,15 +709,15 @@ def job():
         -- AND overall_process_status = 'NOK'
         AND recorded_at > '{recorded_at_summary}'
         AND (
-            (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+            (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
             (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
             (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
-            (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
-            (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
+            (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 9 OR parameter_value_num > 45)) OR
+            (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -9)) OR
             (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 30 OR parameter_value_num > 100000))
         )
         GROUP BY STATION_NAME, PARAMETER_NAME
         ORDER BY COUNT DESC
@@ -1245,15 +1114,15 @@ def job():
                 -- AND overall_process_status = 'NOK'
                 -- AND recorded_at > '2025-03-07'
                 AND (
-                    (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 44.7)) OR
+                    (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_num < 39 OR parameter_value_num > 47)) OR
                     (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 5000 OR parameter_value_num > 12000)) OR
-                    (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.8)) OR
+                    (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 2.6 OR parameter_value_num > 3.9)) OR
                     (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.2 OR parameter_value_num > 3.0)) OR
                     (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 13 OR parameter_value_num > 45)) OR
                     (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -45 OR parameter_value_num > -13)) OR
                     (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.6)) OR
-                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 42.300)) OR
-                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 4.5 OR parameter_value_num > 12.50))
+                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_num < 1 OR parameter_value_num > 100000)) OR
+                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_num < 33.580 OR parameter_value_num > 100000))
                 )
                 -- GROUP BY STATION_NAME, PARAMETER_NAME
                 -- ORDER BY COUNT DESC
