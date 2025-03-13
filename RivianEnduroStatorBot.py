@@ -218,19 +218,19 @@ def job():
     AND STATION_NAME = '100'
     AND recorded_at > '{recorded_at}'
     AND (
-        (PARAMETER_NAME = 'Value height pin x' AND (parameter_value_num < 47.500 OR parameter_value_num > 50.800)) OR
-        (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.1 OR parameter_value_num > 2.5)) OR
-        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 1.850 OR parameter_value_num > 4)) OR
-        (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 2700 OR parameter_value_num > 10000)) OR
-        (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 15 OR parameter_value_num > 40)) OR
-        (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -40 OR parameter_value_num > -15)) OR
-        (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.95)) OR
-        (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_num < 0 OR parameter_value_num > 0.4)) OR
-        (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND parameter_value_num != 0) OR
-        (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_num != 0) OR
-        (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_num != 0) OR
-        (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_num != 0) OR
-        (PARAMETER_NAME ILIKE 'Value Label ID' AND parameter_value_num != 0)
+        (PARAMETER_NAME = 'Value height pin x' AND (parameter_value_raw < 47.600 OR parameter_value_raw > 51.800)) OR
+        (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_raw < 1.1 OR parameter_value_raw > 2.5)) OR
+        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_raw < 1.850 OR parameter_value_raw > 4)) OR
+        (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_raw < 2700 OR parameter_value_raw > 10000)) OR
+        (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 15 OR parameter_value_raw > 40)) OR
+        (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -40 OR parameter_value_raw > -15)) OR
+        (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.95)) OR
+        (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.4)) OR
+        (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6) OR
+        (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
+        (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
+        (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_raw != 0) OR
+        (PARAMETER_NAME ILIKE 'Value Label ID' AND parameter_value_raw != 0)
     )
     GROUP BY STATION_NAME, PARAMETER_NAME
     ORDER BY COUNT DESC
@@ -764,19 +764,19 @@ def job():
         AND STATION_NAME = '100'
         AND recorded_at > '{recorded_at_summary}'
         AND (
-            (PARAMETER_NAME = 'Value height pin x' AND (parameter_value_num < 47.500 OR parameter_value_num > 50.800)) OR
-            (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_num < 1.1 OR parameter_value_num > 2.5)) OR
-            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_num < 1.850 OR parameter_value_num > 4)) OR
-            (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_num < 2700 OR parameter_value_num > 10000)) OR
-            (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_num < 15 OR parameter_value_num > 40)) OR
-            (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_num < -40 OR parameter_value_num > -15)) OR
-            (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_num < 0 OR parameter_value_num > 0.95)) OR
-            (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_num < 0 OR parameter_value_num > 0.4)) OR
-            (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND parameter_value_num != 0) OR
-            (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_num != 0) OR
-            (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_num != 0) OR
-            (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_num != 0) OR
-            (PARAMETER_NAME ILIKE 'Value Label ID' AND parameter_value_num != 0)
+            (PARAMETER_NAME = 'Value height pin x' AND (parameter_value_raw < 47.600 OR parameter_value_raw > 51.800)) OR
+            (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_raw < 1.1 OR parameter_value_raw > 2.5)) OR
+            (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_raw < 1.850 OR parameter_value_raw > 4)) OR
+            (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_raw < 2700 OR parameter_value_raw > 10000)) OR
+            (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 15 OR parameter_value_raw > 40)) OR
+            (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -40 OR parameter_value_raw > -15)) OR
+            (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.95)) OR
+            (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.4)) OR
+            (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6) OR
+            (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
+            (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
+            (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_raw != 0) OR
+            (PARAMETER_NAME ILIKE 'Value Label ID' AND parameter_value_raw != 0)
         )
         GROUP BY STATION_NAME, PARAMETER_NAME
         ORDER BY COUNT DESC
