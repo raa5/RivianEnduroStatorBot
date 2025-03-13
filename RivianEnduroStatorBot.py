@@ -172,8 +172,8 @@ def job():
             (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 9 OR parameter_value_raw > 45)) OR
             (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > -9)) OR
             (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.6)) OR
-            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 30 OR parameter_value_raw > 100000)) OR
-            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 1 OR parameter_value_raw > 100000))
+            (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000)) OR
+            (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000))
         )
         GROUP BY STATION_NAME, PARAMETER_NAME
         ORDER BY COUNT DESC
@@ -577,8 +577,8 @@ def job():
                 (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 9 OR parameter_value_raw > 45)) OR
                 (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > -9)) OR
                 (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.6)) OR
-                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 30 OR parameter_value_raw > 100000)) OR
-                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 1 OR parameter_value_raw > 100000))
+                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000)) OR
+                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000))
             )
             -- GROUP BY STATION_NAME, PARAMETER_NAME
             -- ORDER BY COUNT DESC
@@ -718,8 +718,8 @@ def job():
                 (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 9 OR parameter_value_raw > 45)) OR
                 (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > -9)) OR
                 (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.6)) OR
-                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 30 OR parameter_value_raw > 100000)) OR
-                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 1 OR parameter_value_raw > 100000))
+                (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000)) OR
+                (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000))
             )
             GROUP BY STATION_NAME, PARAMETER_NAME
             ORDER BY COUNT DESC
@@ -1123,8 +1123,8 @@ def job():
                     (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < 13 OR parameter_value_raw > 45)) OR
                     (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > -13)) OR
                     (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.6)) OR
-                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 30 OR parameter_value_raw > 100000)) OR
-                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 1 OR parameter_value_raw > 100000))
+                    (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000)) OR
+                    (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000))
                 )
                 -- GROUP BY STATION_NAME, PARAMETER_NAME
                 -- ORDER BY COUNT DESC
