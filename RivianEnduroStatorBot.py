@@ -226,7 +226,7 @@ def job():
         (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -40 OR parameter_value_raw > -15)) OR
         (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.95)) OR
         (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.4)) OR
-        (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6) OR
+        (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6)) OR
         (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
         (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
         (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_raw != 0) OR
@@ -772,7 +772,7 @@ def job():
             (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -40 OR parameter_value_raw > -15)) OR
             (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.95)) OR
             (PARAMETER_NAME ILIKE '%defect%' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.4)) OR
-            (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6) OR
+            (PARAMETER_NAME ILIKE '%OD Outer Winding Grayscale%' AND (parameter_value_raw < 0 OR parameter_value_raw > 6)) OR
             (PARAMETER_NAME ILIKE 'Value Label Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
             (PARAMETER_NAME ILIKE 'Value Label OD Winding Grayscale' AND parameter_value_raw != 0) OR
             (PARAMETER_NAME ILIKE 'Value Label OD Pins Grayscale' AND parameter_value_raw != 0) OR
