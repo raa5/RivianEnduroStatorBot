@@ -120,21 +120,32 @@ def job():
     # Query 50 - Every Hour
     ########################################################################################
     query_50 = f"""
-    SELECT 
-        COUNT(*) as COUNT,
-        '050' as STATION_NAME,
-        'Twisting Check Plate Fails' as PARAMETER_NAME
-    FROM (
+    WITH alarm_data AS (
         SELECT *,
-               LAG(cleared_at) OVER (PARTITION BY alarm_source_scada_short_name ORDER BY activated_at) AS prev_cleared_at
+            LAG(cleared_at) OVER (PARTITION BY alarm_source_scada_short_name ORDER BY activated_at) AS prev_cleared_at
         FROM manufacturing.drive_unit.fct_du02_scada_alarms
         WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
         AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at}'
         AND alarm_priority_desc IN ('high', 'critical')
-        AND alarm_description ILIKE '%Assembly error%Task[301]%'
-    ) subquery
-    WHERE activated_at > prev_cleared_at + INTERVAL '30 seconds'
-       OR prev_cleared_at IS NULL; -- Keep the first occurrence
+    )
+
+    SELECT 
+        COUNT(*) AS COUNT,
+        '050' AS STATION_NAME,
+        'Twisting Check Plate Fails' AS PARAMETER_NAME
+    FROM alarm_data
+    WHERE (activated_at > prev_cleared_at + INTERVAL '30 seconds' OR prev_cleared_at IS NULL)
+    AND alarm_description ILIKE '%Assembly error%Task[301]%'
+
+    UNION ALL
+
+    SELECT 
+        COUNT(*) AS COUNT,
+        '050' AS STATION_NAME,
+        TRIM(BOTH ' []' FROM SPLIT_PART(alarm_description, 'Key', 2)) AS PARAMETER_NAME
+    FROM alarm_data
+    WHERE alarm_description ILIKE '%Gripper%work%'
+    GROUP BY parameter_name;
     """
 
     ########################################################################################
@@ -666,21 +677,32 @@ def job():
         # Query 50 - Summary
         ########################################################################################
         query_50_summary = f"""
-        SELECT 
-            COUNT(*) as COUNT,
-            '050' as STATION_NAME,
-            'Twisting Check Plate Fails' as PARAMETER_NAME
-        FROM (
+        WITH alarm_data AS (
             SELECT *,
                 LAG(cleared_at) OVER (PARTITION BY alarm_source_scada_short_name ORDER BY activated_at) AS prev_cleared_at
             FROM manufacturing.drive_unit.fct_du02_scada_alarms
             WHERE alarm_source_scada_short_name ILIKE '%STTR01-050%'
             AND CONVERT_TIMEZONE('UTC', 'America/Chicago', activated_at) > '{recorded_at_summary}'
             AND alarm_priority_desc IN ('high', 'critical')
-            AND alarm_description ILIKE '%Assembly error%Task[301]%'
-        ) subquery
-        WHERE activated_at > prev_cleared_at + INTERVAL '30 seconds'
-        OR prev_cleared_at IS NULL; -- Keep the first occurrence
+        )
+
+        SELECT 
+            COUNT(*) AS COUNT,
+            '050' AS STATION_NAME,
+            'Twisting Check Plate Fails' AS PARAMETER_NAME
+        FROM alarm_data
+        WHERE (activated_at > prev_cleared_at + INTERVAL '30 seconds' OR prev_cleared_at IS NULL)
+        AND alarm_description ILIKE '%Assembly error%Task[301]%'
+
+        UNION ALL
+
+        SELECT 
+            COUNT(*) AS COUNT,
+            '050' AS STATION_NAME,
+            TRIM(BOTH ' []' FROM SPLIT_PART(alarm_description, 'Key', 2)) AS PARAMETER_NAME
+        FROM alarm_data
+        WHERE alarm_description ILIKE '%Gripper%work%'
+        GROUP BY parameter_name;
         """
 
         ########################################################################################
