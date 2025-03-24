@@ -2108,29 +2108,27 @@ def job():
             {
                 "type": "section",
                 "text": {
-                    "type": "mrkdwn", 
-                    "text": f"*🚨Fail count by Parameter:* `{recorded_at} - {(one_hour_before + timedelta(hours=1)).strftime("%H:00")}`"
+                    "type": "mrkdwn", "text": "*🚨Fail count by Parameter:* "
+                    + recorded_at
+                    + " to "
+                    + (one_hour_before + timedelta(hours=1)).strftime("%H:00"),
                 },
             },
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", 
-                         "text": "```" + df_combined_str + "```"},
+                "text": {"type": "mrkdwn", "text": "```" + df_combined_str + "```"},
             },
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", 
-                         "text": "*Fails by Station Pareto:*"},
+                "text": {"type": "mrkdwn", "text": "*Fails by Station Pareto:*"},
             },
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", 
-                         "text": "```" + df_sum_str + "```"},
+                "text": {"type": "mrkdwn", "text": "```" + df_sum_str + "```"},
             },
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", 
-                         "text": "*Fails by Hairpin Station:*"},
+                "text": {"type": "mrkdwn", "text": "*Fails by Hairpin Station:*"},
             },
             {
                 "type": "section",
@@ -2157,8 +2155,11 @@ def job():
                 {
                     "type": "section",
                     "text": {
-                        "type": "mrkdwn", 
-                        "text": f"*Fail count by Parameter:* `{recorded_at_midshift} - {current_time}`"
+                        "type": "mrkdwn", "text": "*Fail count by Parameter:* "
+                        + recorded_at_midshift
+                        + " to "
+                        + current_time,
+                        # + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
                     },
                 },
                 {
@@ -2170,8 +2171,7 @@ def job():
                 },
                 {
                     "type": "section",
-                    "text": {"type": "mrkdwn", 
-                             "text": "*Fails by Station Pareto:*"},
+                    "text": {"type": "mrkdwn", "text": "*Fails by Station Pareto:*"},
                 },
                 {
                     "type": "section",
@@ -2209,11 +2209,11 @@ def job():
                 {
                     "type": "section",
                     "text": {
-                        "type": "mrkdwn", "text": f"*Fail count by Parameter:* `{recorded_at_summary} - {current_time}`"
-                        # + recorded_at_summary
-                        # + " to "
-                        # + current_time,
-                        # # + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
+                        "type": "mrkdwn", "text": "*Fail count by Parameter:* "
+                        + recorded_at_summary
+                        + " to "
+                        + current_time,
+                        # + (recorded_at_summary + timedelta(hours=200)).strftime("%Y-%m-%d %H:00"),
                     },
                 },
                 {
@@ -2225,8 +2225,7 @@ def job():
                 },
                 {
                     "type": "section",
-                    "text": {"type": "mrkdwn", 
-                             "text": "*Fails by Station Pareto:*"},
+                    "text": {"type": "mrkdwn", "text": "*Fails by Station Pareto:*"},
                 },
                 {
                     "type": "section",
@@ -2237,8 +2236,7 @@ def job():
                 },
                 {
                     "type": "section",
-                    "text": {"type": "mrkdwn", 
-                             "text": "*Fails by Hairpin Station:*"},
+                    "text": {"type": "mrkdwn", "text": "*Fails by Hairpin Station:*"},
                     },
                 {
                     "type": "section",
