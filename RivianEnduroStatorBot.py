@@ -639,6 +639,120 @@ def job():
         and opsf.recorded_at > '{recorded_at}'
         group by opsf.station_name, NPR.station_name
     """
+    ########################################################################################
+    # Query 65 - Fails by Hairpin Type - Every Hour
+    ########################################################################################
+    query_65_hairpin_type = f"""
+    with
+
+        nest_parameter_records as 
+            (
+            select product_serial, station_name, parameter_name, parameter_value_raw, overall_process_status, recorded_at
+            from manufacturing.spinal.fct_spinal_parameter_records
+            where 
+                shop_name = 'DU02'
+                and line_name = 'STTR01'
+                and station_name like '030%'
+                and parameter_name = 'Nest'
+            ),
+
+        genealogy_hist as 
+            (
+            select product_serial, scanned_child_serial, consumed_at, product_part_desc, child_part_desc, scanned_child_data
+            from manufacturing.mes.fct_genealogy_hist
+            where
+                shop_name = 'DU02'
+                and line_name = 'STTR01'
+            ),
+
+        stack_serial as 
+            (
+            select scanned_child_serial, product_serial
+            from manufacturing.mes.fct_genealogy_hist
+            where line_name = 'STTR01'
+            and shop_name = 'DU02'
+            and scanned_child_part in ('PT00237854-C') 
+            ),
+
+        wire_spool as 
+            (
+            select product_serial, product_part, parameter_name, parameter_value_raw, recorded_at
+            from manufacturing.spinal.fct_spinal_parameter_records
+            where
+                shop_name = 'DU02'
+                and line_name = 'STTR01'
+                and station_name like '030%'
+                and parameter_name ilike '%batch%'
+                and parameter_value_raw ilike '%PT00237846-C%' 
+            ),
+
+        op_sixty_five as
+            (
+            select product_serial, station_name, recorded_at, result_status, work_element, parameter_name, parameter_value_raw
+            from manufacturing.spinal.fct_spinal_parameter_records
+            where
+                shop_name = 'DU02'
+                and line_name = 'STTR01'
+                and station_name ilike '%065%'
+                and (
+                        (PARAMETER_NAME = 'Value Height Pin X' AND (parameter_value_raw < 39 OR parameter_value_raw > 47)) OR
+                        (PARAMETER_NAME = 'Value Pixle Area Pin X' AND (parameter_value_raw < 5000 OR parameter_value_raw > 12000)) OR
+                        (PARAMETER_NAME = 'Value Blob X Feret Diameters Pin X' AND (parameter_value_raw < 2.6 OR parameter_value_raw > 3.9)) OR
+                        (PARAMETER_NAME = 'Value Blob Y Feret Diameters Pin X' AND (parameter_value_raw < 1.2 OR parameter_value_raw > 3.0)) OR
+                        (PARAMETER_NAME = 'Value Angle 1 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > 45)) OR
+                        (PARAMETER_NAME = 'Value Angle 2 Pin X' AND (parameter_value_raw < -45 OR parameter_value_raw > 45)) OR
+                        (PARAMETER_NAME = 'Value Level Difference' AND (parameter_value_raw < 0 OR parameter_value_raw > 0.6)) OR
+                        (PARAMETER_NAME = 'Value Pin 1 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000)) OR
+                        (PARAMETER_NAME = 'Value Pin 5 edge to stack edge' AND (parameter_value_raw < 0 OR parameter_value_raw > 100000))
+                    )
+            ),
+
+        STTR_065_WEs AS 
+            (
+            SELECT *
+            FROM main.adhoc.sttr_065_hmi_hairpin_naming_work_elements
+            )
+
+        select distinct
+            -- SS.scanned_child_serial as Stack_Serial,
+            -- WS.parameter_value_raw as Copper_Wire_Spool,
+            -- NPR.product_serial as Nest_Product_Serial,
+            count(distinct GH.product_serial) as COUNT,
+            opsf.station_name as STATION_NAME,
+            NPR.station_name as Sttr_030_Hairpin_Origin,
+            -- GH.product_serial as Stator_Assembly_Serial_Number,
+            -- opsf.result_status as Sttr_065_Result_Status,
+            -- opsf.recorded_at as Sttr_065_Recorded_At_Central_Time,
+            -- substring (WS.parameter_value_raw, position('C' in ws.parameter_value_raw) + 1, 8) as Copper_Wire_8_Digit,
+            -- sfwe.Hairpins_In_Welded_Pin_Pair,
+                LEFT(sfwe.Hairpins_In_Welded_Pin_Pair, 5) 
+                || ' & ' || 
+                SUBSTRING(sfwe.Hairpins_In_Welded_Pin_Pair, POSITION('&' IN sfwe.Hairpins_In_Welded_Pin_Pair) + 2, 5) 
+                AS Hairpin_Short_Name
+            -- opsf.parameter_name, 
+            -- opsf.parameter_value_raw
+
+        from nest_parameter_records as NPR
+
+        join genealogy_hist as GH
+            on NPR.product_serial = GH.scanned_child_serial
+        join op_sixty_five as opsf
+            on GH.product_serial = opsf.product_serial
+        join stack_serial as SS
+            ON GH.product_serial = SS.product_serial
+        left join wire_spool as WS
+            on NPR.product_serial = WS.product_serial
+        join STTR_065_WEs sfwe
+            on opsf.work_element = sfwe.DELMIA_WE_Name
+
+        WHERE
+            opsf.station_name ILIKE '%065%'
+            -- and opsf.result_status = 'FAIL'
+            and opsf.recorded_at > '{recorded_at}'
+            group by all
+            order by 1 desc 
+        ;
+    """
 
 #########################################################################################
 # If Statement for Summary Queries at midshift
@@ -2021,6 +2135,8 @@ def job():
     df_40_hairpin_origin = pd.read_sql(query_40_hairpin_origin, conn)
     df_50_hairpin_origin = pd.read_sql(query_50_hairpin_origin, conn)
     df_65_hairpin_origin = pd.read_sql(query_65_hairpin_origin, conn)
+    
+    df_hairpin_type = pd.read_sql(query_65_hairpin_type, conn)
 
     ########################################################################################
     # Combine DataFrames
@@ -2098,6 +2214,8 @@ def job():
     )
     df_hairpin_origin = df_hairpin_origin.sort_values(["COUNT"], ascending=False, ignore_index=True)
     df_hairpin_origin_str = df_to_table(df_hairpin_origin)
+    
+    df_hairpin_type_str = df_to_table(df_hairpin_type)
 
     ########################################################################################
     # Payload with both DataFrames formatted as tables
@@ -2135,6 +2253,17 @@ def job():
                 "text": {
                     "type": "mrkdwn",
                     "text": "```" + df_hairpin_origin_str + "```",
+                },
+            },
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Fails by Hairpin Type:*"},
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "```" + df_hairpin_type_str + "```",
                 },
             },
             {"type": "divider"},  # Add a divider to separate sections clearly
