@@ -2415,7 +2415,7 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "```" + df_to_table(df_combined_summary) + "```",
+                        "text": "```" + df_to_table(df_combined_midshift) + "```",
                     },
                 },
                 {
@@ -2426,7 +2426,7 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "```" + df_to_table(df_sum_summary) + "```",
+                        "text": "```" + df_to_table(df_sum_midshift) + "```",
                     },
                 },
                 {
@@ -2437,7 +2437,7 @@ def job():
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "```" + df_hairpin_origin_summary_str + "```",
+                        "text": "```" + df_hairpin_origin_midshift_str + "```",
                     },
                 },
                 {"type": "divider"},  # Add a divider to separate sections clearly
